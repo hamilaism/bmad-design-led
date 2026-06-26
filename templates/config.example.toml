@@ -1,0 +1,19 @@
+# TEMPLATE — enregistrement du roster (party-mode + resolve_config).
+# Copier vers <projet>/_bmad/custom/config.toml.
+#
+# Le manifest installer de BMAD ne déclare que les agents de base. Pour qu'un agent
+# custom apparaisse dans le roster (resolve_config.py --key agents) et en party-mode,
+# il faut une entrée ici, keyée par le slug du skill.
+#
+# Tables deep-merge sur la config de base ; entrées keyées mergées par clé.
+
+[agents.bmad-agent-example]
+module = "bmm"
+team = "software-development"
+name = "<Prénom>"
+title = "<Rôle>"
+icon = "🎯"
+description = "<Une ligne : ce que l'agent porte, sa posture, et que le décideur tranche le goût. C'est ce texte qui s'affiche dans le roster party-mode.>"
+
+# Répéter le bloc pour chaque agent custom du roster.
+# Invariant à tenir : N agents = N dirs .claude/skills/bmad-agent-* + N entrées ici.

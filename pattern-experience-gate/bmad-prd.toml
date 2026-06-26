@@ -1,0 +1,22 @@
+# Pattern « gate design-led » — câble le GATE Experience Strategy Brief → PRD en NATIF (BMAD v6).
+# Le gate n'est pas qu'une phrase de persona : c'est une vraie vérif machine — à l'entrée
+# (prepend), aux faits persistants, et au finalize (reviewer adversarial).
+# Aucune édition du cœur bmm : tout passe par le mécanisme d'override natif (arrays append).
+# Voir ../METHOD.md et ./README.md.
+#
+# Installation : copier ce fichier dans <projet>/_bmad/custom/bmad-prd.toml
+
+[workflow]
+
+activation_steps_prepend = [
+  "GATE DESIGN-LED — à l'entrée. Avant de rédiger le PRD, vérifie qu'un Experience Strategy Brief existe (la lentille du Brand Strategist : insight, promesse, Experience Principles, Moments of Truth). S'il manque : signale-le clairement — « ce PRD ne sera pas design-led tant que le Brief n'est pas posé » — et recommande de produire le Brief d'abord ; ne bloque pas en dur (le degré est ajustable selon le projet), mais marque l'écart. S'il existe : cite-le en tête du PRD.",
+]
+
+persistent_facts = [
+  "RÈGLE DESIGN-LED : ce PRD DESCEND d'un Experience Strategy Brief. Aucune exigence sans un principe d'expérience PARENT qu'elle trace. Une exigence orpheline (sans principe parent) est à requalifier ou à supprimer, pas à garder par défaut.",
+]
+
+# Le reviewer adversarial du gate : tourne au Finalize (et à l'intent Validate) comme subagent contre le PRD.
+finalize_reviewers = [
+  "GATE DESIGN-LED — traçabilité d'expérience. Passe le PRD au crible : pour CHAQUE exigence/section, vérifie qu'elle trace un principe d'expérience parent issu de l'Experience Strategy Brief. (1) Le Brief existe-t-il et est-il cité en tête ? (2) Liste les exigences ORPHELINES (sans principe parent) comme des défauts à corriger. (3) Verdict : design-led respecté OUI/NON, + la liste des orphelines + les principes non couverts. Sois adverse : une justification vague (« ça sert l'expérience ») ne compte pas comme principe parent.",
+]

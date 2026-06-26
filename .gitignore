@@ -1,0 +1,15 @@
+# Node / Next (addon-taste/interviewer)
+node_modules/
+.next/
+out/
+.vercel/
+*.tsbuildinfo
+
+# Secrets & env — jamais commités
+.env
+.env.*
+!.env.example
+
+# OS / éditeur
+.DS_Store
+*.log

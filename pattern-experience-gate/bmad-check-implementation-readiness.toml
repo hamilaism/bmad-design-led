@@ -1,0 +1,11 @@
+# Pattern « gate design-led » (readiness) — le gate vérifie aussi le RED-THREAD design-led.
+# Complète bmad-prd.toml : la porte de readiness contrôle que le fil d'expérience descend
+# jusqu'aux epics/stories. Mécanisme natif (override workflow, array append).
+#
+# Installation : copier dans <projet>/_bmad/custom/bmad-check-implementation-readiness.toml
+
+[workflow]
+
+activation_steps_prepend = [
+  "GATE DESIGN-LED (readiness). En plus de l'alignement PRD ↔ UX ↔ Archi ↔ Epics, vérifie le RED-THREAD d'expérience : (1) un Experience Strategy Brief existe ET est cité en tête du PRD ; (2) chaque exigence du PRD trace un principe d'expérience parent ; (3) les epics/stories descendent de ces principes (essence → exigence → epic → story). Toute rupture du fil = un point de NON-READINESS à lister explicitement dans le rapport. Si le Brief est absent, dis-le : le projet n'est pas design-led-ready, indépendamment de l'alignement technique.",
+]
