@@ -57,3 +57,11 @@ Le **goût est l'actif le plus précieux et le plus mal rangé** : ce n'est pas 
 - Base : **BMAD v6**. Le cœur (`_bmad/core`, `_bmad/bmm`, moteur de merge, skills de workflow) est **installé séparément** et **jamais édité**.
 - Tout le remix passe par les couches d'override natives : `_bmad/custom/*.toml` (team) et `.claude/skills/*/customize.toml` (par skill). Scalaires override, arrays append.
 - Avant tout upgrade BMAD : dry-run sur copie + diff du roster (les overrides sont sûrs, mais un skill renommé en amont casse un override qui le cible).
+
+## Outillage de dev — doc à jour via Context7
+
+Règle transverse à **tout agent qui touche du code** (dev, architecte, revue technique) — et à toi, et à tes subagents : **avant d'utiliser une lib ou une API, consulter [Context7](https://github.com/upstash/context7)** (MCP) pour la doc à jour — `resolve-library-id` puis `get-library-docs` — plutôt que de deviner une signature.
+
+- Installation : `claude mcp add --transport http context7 https://mcp.context7.com/mcp -s user` (scope `user` = tous tes projets ; ou `-s project` pour le partager via le `.mcp.json` du repo).
+- S'applique à **tout dev** : toi, tes subagents, les agents BMAD. Un agent technique parti du template (`templates/`) porte le réflexe (voir le `persistent_fact` commenté).
+- Une session déjà ouverte ne voit pas un serveur MCP ajouté après son démarrage : relancer la session pour que les outils `context7` apparaissent.

@@ -2,6 +2,11 @@
 
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/). Versionné en SemVer.
 
+## [0.1.1] — 2026-06-27
+
+### Ajouté
+- **Context7 dans le flux de dev** (`METHOD.md` → « Outillage de dev ») : tout agent qui touche du code (dev, archi, revue) — et toi, et tes subagents — consulte Context7 (MCP) pour la doc à jour des libs/API avant de deviner une signature. Réflexe opt-in ajouté au template d'agent.
+
 ## [0.1.0] — 2026-06-27
 
 Première version publique. Extrait et généralisé depuis un projet de référence.

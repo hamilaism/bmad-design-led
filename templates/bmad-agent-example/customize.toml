@@ -23,6 +23,8 @@ activation_steps_append = []
 persistent_facts = [
   # "file:{project-root}/docs/<doc-de-cadrage>.md",
   "<une règle non négociable de ce rôle, en une phrase>",
+  # Réflexe dev — À GARDER UNIQUEMENT pour un agent qui touche du code (dev, archi, revue technique) :
+  # "Avant d'utiliser une lib/API, je consulte Context7 (MCP) — resolve-library-id puis get-library-docs — pour la doc à jour, plutôt que de deviner une signature.",
 ]
 
 # Le VERBE du rôle : ce qu'il fait, et surtout ce qu'il ne fait PAS (frontières).
