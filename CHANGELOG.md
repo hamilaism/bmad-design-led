@@ -12,6 +12,9 @@ Format inspiré de [Keep a Changelog](https://keepachangelog.com/). Versionné e
   - **Hébergement** — build `output: standalone` + `Dockerfile` → Docker, VPS, Render, Railway, Netlify, Vercel… au choix.
 - **Verrou de profil par PIN** — prénom + code à 4 chiffres (hashé côté serveur) : identifie + protège une personnalité, rouvrir/enrichir exige le bon code.
 - README clé-en-main de l'app (les 3 axes, variables d'env, schéma, déploiement).
+- **Espace perso multi-profils** : une personne (prénom + code à 4 chiffres) gère N profils depuis un tableau de bord (statut ○ à faire / ◐ en cours / ✅ fait), les enrichit (fiche régénérée v2/v3, inputs accumulés), et les supprime. Schéma `persons` + `profiles`.
+- **Collecte opérateur** : `/api/export?key=…` (toutes les fiches de l'instance, JSON ou markdown). Chaque instance ne collecte que sa propre DB.
+- **Transparence** : bandeau clair (« collectée par {OPERATOR_NAME} » / générique / « non collectée »), + téléchargement de sa fiche par le participant.
 
 ### Notes
 - Les fiches captées (couche *Goût*, `addon-taste/twins/`) et les sources couplées au projet d'origine (`*.source.md`) restent **hors-git** : ce repo ship la *machinerie*, pas le *remplissage*.

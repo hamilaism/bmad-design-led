@@ -1,26 +1,37 @@
-// Couche STOCKAGE agnostique — n'impose aucun service.
+// Couche STOCKAGE agnostique — modèle « espace perso » (1 personne → N profils).
 //   STORE=supabase → @supabase/supabase-js (SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY)
-//   STORE=postgres → node-postgres (POSTGRES_URL) — n'importe quel Postgres : Neon, Railway, VPS, LOCAL
-//   STORE=none     → pas de persistance (fiche affichée/téléchargée ; PIN non appliqué)
-// Sans STORE explicite : auto-détecté depuis les variables d'env présentes.
+//   STORE=postgres → node-postgres (POSTGRES_URL) — n'importe quel Postgres (hébergé ou LOCAL)
+//   STORE=none     → pas de persistance (espace désactivé ; fiche affichée/téléchargée)
 
 import { createClient } from "@supabase/supabase-js";
 import { Pool } from "pg";
 import type { Verdict } from "@/lib/artefacts";
 
-export type FicheRow = {
-  agent: string;
-  person: string | null;
-  fiche: string;
+export type ProfileStatus = "empty" | "partial" | "done";
+export type ProfileSummary = { agent: string; status: ProfileStatus; ficheVersion: number; updatedAt: string };
+export type ProfileState = {
   transcript: string;
-  classification: Verdict[] | null;
-  injection: any[] | null;
+  verdicts: Verdict[];
+  injections: any[];
+  fiche: string | null;
+  ficheVersion: number;
 };
+export type FicheExport = { person: string; agent: string; fiche: string | null; ficheVersion: number; updatedAt: string };
 
 export interface Store {
-  getProfilePinHash(agent: string, person: string): Promise<string | null>;
-  upsertProfile(agent: string, person: string, pinHash: string): Promise<void>;
-  insertFiche(row: FicheRow): Promise<void>;
+  getPersonPinHash(name: string): Promise<string | null>; // null si la personne n'existe pas
+  createPerson(name: string, pinHash: string): Promise<void>;
+  listProfiles(name: string): Promise<ProfileSummary[]>;
+  getProfile(name: string, agent: string): Promise<ProfileState | null>;
+  upsertProfile(name: string, agent: string, s: ProfileState): Promise<void>;
+  deleteProfile(name: string, agent: string): Promise<void>;
+  exportAll(): Promise<FicheExport[]>; // opérateur : toutes les fiches de cette instance
+}
+
+function statusOf(r: { fiche_version?: number; transcript?: string; verdicts?: any[]; injections?: any[] }): ProfileStatus {
+  if ((r.fiche_version ?? 0) > 0) return "done";
+  if ((r.transcript && r.transcript.length > 0) || r.verdicts?.length || r.injections?.length) return "partial";
+  return "empty";
 }
 
 function pick(): "supabase" | "postgres" | "none" {
@@ -30,7 +41,6 @@ function pick(): "supabase" | "postgres" | "none" {
   if (process.env.POSTGRES_URL || process.env.DATABASE_URL) return "postgres";
   return "none";
 }
-
 export const STORE_KIND = pick();
 
 let cached: Store | null | undefined;
@@ -40,37 +50,93 @@ export function getStore(): Store | null {
   return cached;
 }
 
-// ── Adaptateur Supabase (PostgREST) ──────────────────────────────────
+// ── Adaptateur Supabase ──────────────────────────────────────────────
 function supabaseStore(): Store {
   const sb = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, {
     auth: { persistSession: false },
   });
   return {
-    async getProfilePinHash(agent, person) {
-      const { data, error } = await sb
-        .from("profiles").select("pin_hash").eq("agent", agent).eq("person", person).maybeSingle();
+    async getPersonPinHash(name) {
+      const { data, error } = await sb.from("persons").select("pin_hash").eq("name", name).maybeSingle();
       if (error) {
-        console.error("[store/supabase] lecture profil:", error.message);
+        console.error("[store/supabase] lecture personne:", error.message);
         return null;
       }
       return data?.pin_hash ?? null;
     },
-    async upsertProfile(agent, person, pinHash) {
-      const { error } = await sb
-        .from("profiles")
-        .upsert({ agent, person, pin_hash: pinHash, updated_at: new Date().toISOString() }, { onConflict: "agent,person" });
-      if (error) console.error("[store/supabase] upsert profil:", error.message);
-    },
-    async insertFiche(r) {
-      const { error } = await sb.from("fiches").insert({
-        agent: r.agent,
-        interviewer: r.person,
-        fiche: r.fiche,
-        transcript: r.transcript,
-        classification: r.classification,
-        injection: r.injection,
-      });
+    async createPerson(name, pinHash) {
+      const { error } = await sb.from("persons").insert({ name, pin_hash: pinHash });
       if (error) throw new Error(error.message);
+    },
+    async listProfiles(name) {
+      const { data, error } = await sb
+        .from("profiles")
+        .select("agent, fiche_version, transcript, verdicts, injections, updated_at")
+        .eq("person", name);
+      if (error) {
+        console.error("[store/supabase] liste profils:", error.message);
+        return [];
+      }
+      return (data || []).map((r: any) => ({
+        agent: r.agent,
+        status: statusOf(r),
+        ficheVersion: r.fiche_version,
+        updatedAt: r.updated_at,
+      }));
+    },
+    async getProfile(name, agent) {
+      const { data, error } = await sb
+        .from("profiles")
+        .select("transcript, verdicts, injections, fiche, fiche_version")
+        .eq("person", name)
+        .eq("agent", agent)
+        .maybeSingle();
+      if (error || !data) return null;
+      return {
+        transcript: data.transcript || "",
+        verdicts: data.verdicts || [],
+        injections: data.injections || [],
+        fiche: data.fiche ?? null,
+        ficheVersion: data.fiche_version || 0,
+      };
+    },
+    async upsertProfile(name, agent, s) {
+      const { error } = await sb.from("profiles").upsert(
+        {
+          person: name,
+          agent,
+          transcript: s.transcript,
+          verdicts: s.verdicts,
+          injections: s.injections,
+          fiche: s.fiche,
+          fiche_version: s.ficheVersion,
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: "person,agent" }
+      );
+      if (error) throw new Error(error.message);
+    },
+    async deleteProfile(name, agent) {
+      const { error } = await sb.from("profiles").delete().eq("person", name).eq("agent", agent);
+      if (error) throw new Error(error.message);
+    },
+    async exportAll() {
+      const { data, error } = await sb
+        .from("profiles")
+        .select("person, agent, fiche, fiche_version, updated_at")
+        .order("person")
+        .order("agent");
+      if (error) {
+        console.error("[store/supabase] export:", error.message);
+        return [];
+      }
+      return (data || []).map((r: any) => ({
+        person: r.person,
+        agent: r.agent,
+        fiche: r.fiche ?? null,
+        ficheVersion: r.fiche_version,
+        updatedAt: r.updated_at,
+      }));
     },
   };
 }
@@ -81,29 +147,69 @@ function postgresStore(): Store {
   const needSsl = /sslmode=require/i.test(connectionString || "") || process.env.POSTGRES_SSL === "true";
   const pool = new Pool({ connectionString, ssl: needSsl ? { rejectUnauthorized: false } : undefined });
   return {
-    async getProfilePinHash(agent, person) {
-      const { rows } = await pool.query("select pin_hash from profiles where agent=$1 and person=$2", [agent, person]);
+    async getPersonPinHash(name) {
+      const { rows } = await pool.query("select pin_hash from persons where name=$1", [name]);
       return rows[0]?.pin_hash ?? null;
     },
-    async upsertProfile(agent, person, pinHash) {
+    async createPerson(name, pinHash) {
+      await pool.query("insert into persons (name, pin_hash) values ($1,$2)", [name, pinHash]);
+    },
+    async listProfiles(name) {
+      const { rows } = await pool.query(
+        "select agent, fiche_version, transcript, verdicts, injections, updated_at from profiles where person=$1",
+        [name]
+      );
+      return rows.map((r: any) => ({
+        agent: r.agent,
+        status: statusOf({
+          fiche_version: r.fiche_version,
+          transcript: r.transcript,
+          verdicts: r.verdicts,
+          injections: r.injections,
+        }),
+        ficheVersion: r.fiche_version,
+        updatedAt: r.updated_at,
+      }));
+    },
+    async getProfile(name, agent) {
+      const { rows } = await pool.query(
+        "select transcript, verdicts, injections, fiche, fiche_version from profiles where person=$1 and agent=$2",
+        [name, agent]
+      );
+      const r = rows[0];
+      if (!r) return null;
+      return {
+        transcript: r.transcript || "",
+        verdicts: r.verdicts || [],
+        injections: r.injections || [],
+        fiche: r.fiche ?? null,
+        ficheVersion: r.fiche_version || 0,
+      };
+    },
+    async upsertProfile(name, agent, s) {
       await pool.query(
-        `insert into profiles (agent, person, pin_hash, updated_at) values ($1,$2,$3, now())
-         on conflict (agent, person) do update set pin_hash=excluded.pin_hash, updated_at=now()`,
-        [agent, person, pinHash]
+        `insert into profiles (person, agent, transcript, verdicts, injections, fiche, fiche_version, updated_at)
+         values ($1,$2,$3,$4,$5,$6,$7, now())
+         on conflict (person, agent) do update set
+           transcript=excluded.transcript, verdicts=excluded.verdicts, injections=excluded.injections,
+           fiche=excluded.fiche, fiche_version=excluded.fiche_version, updated_at=now()`,
+        [name, agent, s.transcript, JSON.stringify(s.verdicts), JSON.stringify(s.injections), s.fiche, s.ficheVersion]
       );
     },
-    async insertFiche(r) {
-      await pool.query(
-        "insert into fiches (agent, interviewer, fiche, transcript, classification, injection) values ($1,$2,$3,$4,$5,$6)",
-        [
-          r.agent,
-          r.person,
-          r.fiche,
-          r.transcript,
-          r.classification ? JSON.stringify(r.classification) : null,
-          r.injection ? JSON.stringify(r.injection) : null,
-        ]
+    async deleteProfile(name, agent) {
+      await pool.query("delete from profiles where person=$1 and agent=$2", [name, agent]);
+    },
+    async exportAll() {
+      const { rows } = await pool.query(
+        "select person, agent, fiche, fiche_version, updated_at from profiles order by person, agent"
       );
+      return rows.map((r: any) => ({
+        person: r.person,
+        agent: r.agent,
+        fiche: r.fiche ?? null,
+        ficheVersion: r.fiche_version,
+        updatedAt: r.updated_at,
+      }));
     },
   };
 }
