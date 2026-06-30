@@ -85,6 +85,18 @@ type Dict = {
   // Divers
   defaultInjectionPrompt: string;
   langLocked: string;
+  // Classification visuelle adaptative
+  gardeHint: string;
+  jetteHint: string;
+  recombineHint: string;
+  visualIntro: string;
+  tasteSoFar: string;
+  seenIn: (app: string) => string;
+  loadingNext: string;
+  recapTitle: string;
+  sigReactions: (n: number) => string;
+  sigRefs: (n: number) => string;
+  sigInterview: (n: number) => string;
 };
 
 const FR: Dict = {
@@ -127,12 +139,12 @@ const FR: Dict = {
   noDeck: "Pas d'artefacts pour ce profil — passe à l'injection.",
   toInjection: "Passer à l'injection →",
   enrichIntro: "Tu enrichis ce profil : réagis à de nouveaux artefacts. ",
-  reasonPlaceholder: "Pourquoi ? (au grain — la couleur, le geste, l'intention…)",
-  skipArtefact: "Passer cet artefact →",
-  endClassif: "Terminer la classification →",
+  reasonPlaceholder: "Dis pourquoi, franchement — ce que tu voles, ce qui te débecte, le détail qui change tout.",
+  skipArtefact: "Passer celui-ci →",
+  endClassif: "J'en ai assez dit →",
   garde: "Je garde",
   jette: "Je jette",
-  recombine: "Je recombine",
+  recombine: "J'en vole un bout",
   stepInjection: "3 · Injection",
   added: (n) => `${n} ajouté${n > 1 ? "s" : ""}`,
   injectLead: "À toi d'apporter tes artefacts. ",
@@ -157,6 +169,17 @@ const FR: Dict = {
   errImage: "Image illisible.",
   defaultInjectionPrompt: "Les exemples que tu admires — et ceux que tu rejettes.",
   langLocked: "Langue verrouillée pendant le parcours — reviens à ton espace pour la changer.",
+  gardeHint: "je vole l'idée telle quelle",
+  jetteHint: "ça dégage, et je sais pourquoi",
+  recombineHint: "j'en garde un bout, je transforme le reste",
+  visualIntro: "Je te montre de vrais écrans. Pour chacun : tu gardes, tu jettes, ou tu en voles un bout — et tu dis pourquoi.",
+  tasteSoFar: "Ton goût qui se dessine",
+  seenIn: (app) => `vu dans ${app}`,
+  loadingNext: "Je cherche le prochain écran…",
+  recapTitle: "Ce qu'on a capté de toi",
+  sigReactions: (n) => `${n} réaction${n > 1 ? "s" : ""} aux artefacts`,
+  sigRefs: (n) => `${n} apport${n > 1 ? "s" : ""}`,
+  sigInterview: (n) => `${n} échange${n > 1 ? "s" : ""} d'entretien`,
 };
 
 const EN: Dict = {
@@ -199,12 +222,12 @@ const EN: Dict = {
   noDeck: "No artefacts for this profile — move on to injection.",
   toInjection: "Skip to injection →",
   enrichIntro: "You're enriching this profile: react to new artefacts. ",
-  reasonPlaceholder: "Why? (at the grain — colour, gesture, intent…)",
-  skipArtefact: "Skip this artefact →",
-  endClassif: "Finish classification →",
+  reasonPlaceholder: "Say why, honestly — what you'd steal, what repels you, the detail that flips it.",
+  skipArtefact: "Skip this one →",
+  endClassif: "I've said enough →",
   garde: "I keep",
   jette: "I toss",
-  recombine: "I remix",
+  recombine: "I steal a bit",
   stepInjection: "3 · Injection",
   added: (n) => `${n} added`,
   injectLead: "Now bring your own artefacts. ",
@@ -229,6 +252,17 @@ const EN: Dict = {
   errImage: "Unreadable image.",
   defaultInjectionPrompt: "The examples you admire — and the ones you reject.",
   langLocked: "Language locked during the flow — go back to your space to change it.",
+  gardeHint: "I'd steal the idea as-is",
+  jetteHint: "it's out, and I know why",
+  recombineHint: "keep a piece, change the rest",
+  visualIntro: "I'll show you real screens. For each: keep it, toss it, or steal a bit — and say why.",
+  tasteSoFar: "Your taste, taking shape",
+  seenIn: (app) => `seen in ${app}`,
+  loadingNext: "Finding the next screen…",
+  recapTitle: "What we've captured from you",
+  sigReactions: (n) => `${n} artefact reaction${n > 1 ? "s" : ""}`,
+  sigRefs: (n) => `${n} addition${n > 1 ? "s" : ""}`,
+  sigInterview: (n) => `${n} interview exchange${n > 1 ? "s" : ""}`,
 };
 
 export const UI: Record<Lang, Dict> = { fr: FR, en: EN };

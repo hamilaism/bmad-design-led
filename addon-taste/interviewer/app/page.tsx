@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { AGENTS, agentTitle } from "@/lib/agents";
 import { deckFor, injectionPromptFor, type Geste, type Verdict, type Injection } from "@/lib/artefacts";
+import { hasVisualPool } from "@/lib/pools";
 import { fileToImage } from "@/lib/image";
 import { tr, detectLang, type Lang } from "@/lib/i18n";
 
@@ -57,6 +58,13 @@ export default function Page() {
   const [cardIdx, setCardIdx] = useState(0);
   const [verdicts, setVerdicts] = useState<Verdict[]>([]);
   const [cardReason, setCardReason] = useState("");
+
+  // Classification visuelle adaptative (pools d'écrans réels)
+  type VArtefact = { id: string; app: string; imageUrl: string; mobbinUrl: string; framing: string; essence: string };
+  const [vArtefact, setVArtefact] = useState<VArtefact | null>(null);
+  const [vShown, setVShown] = useState<string[]>([]);
+  const [vInterp, setVInterp] = useState("");
+  const [vBusy, setVBusy] = useState(false);
 
   // Injection
   const [injections, setInjections] = useState<Injection[]>([]);
@@ -159,6 +167,9 @@ export default function Page() {
     setCardIdx(0);
     setVerdicts([]);
     setCardReason("");
+    setVArtefact(null);
+    setVShown([]);
+    setVInterp("");
     setInjections([]);
     setDraft({ label: "", stance: "fétiche", why: "" });
     setFiche(null);
@@ -166,6 +177,7 @@ export default function Page() {
     setEnrichMode(done);
     if (done) {
       setView("classification"); // enrichir : on saute l'entretien
+      if (hasVisualPool(id)) fetchNextArtefact(id, [], []);
     } else {
       setView("interview");
       startInterview(id);
@@ -259,6 +271,56 @@ export default function Page() {
     setCardReason("");
     if (!deck || cardIdx + 1 >= deck.cards.length) setView("injection");
     else setCardIdx((i) => i + 1);
+  }
+
+  // ---------- CLASSIFICATION VISUELLE ADAPTATIVE ----------
+  async function fetchNextArtefact(id: string, hist: Verdict[], shown: string[]) {
+    setVBusy(true);
+    setVArtefact(null);
+    setError(null);
+    try {
+      const res = await fetch("/api/classify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          agentId: id,
+          accessCode,
+          lang,
+          shownIds: shown,
+          history: hist.map((v) => ({ id: v.id, geste: v.geste, reason: v.reason, essence: v.label })),
+        }),
+      });
+      const data = await res.json().catch(() => ({} as any));
+      if (!res.ok) throw new Error(data?.error || T.errGeneric);
+      if (data.done) {
+        setVArtefact(null);
+        setView("injection");
+        return;
+      }
+      setVArtefact(data.artefact);
+      setVInterp(data.interpretation || "");
+    } catch (e: any) {
+      setError(e?.message || T.errGeneric);
+    } finally {
+      setVBusy(false);
+    }
+  }
+  function recordVisualVerdict(geste: Geste) {
+    if (!vArtefact || vBusy) return;
+    const verdict: Verdict = { id: vArtefact.id, label: vArtefact.essence, geste, reason: cardReason.trim() };
+    const nextVerdicts = [...verdicts.filter((x) => x.id !== verdict.id), verdict];
+    const nextShown = vShown.includes(vArtefact.id) ? vShown : [...vShown, vArtefact.id];
+    setVerdicts(nextVerdicts);
+    setVShown(nextShown);
+    setCardReason("");
+    fetchNextArtefact(agentId, nextVerdicts, nextShown);
+  }
+  function skipVisual() {
+    if (!vArtefact || vBusy) return;
+    const nextShown = vShown.includes(vArtefact.id) ? vShown : [...vShown, vArtefact.id];
+    setVShown(nextShown);
+    setCardReason("");
+    fetchNextArtefact(agentId, verdicts, nextShown);
   }
 
   // ---------- INJECTION ----------
@@ -428,6 +490,43 @@ export default function Page() {
 
     // CLASSIFICATION
     if (view === "classification") {
+      // Branche VISUELLE adaptative (pools d'écrans réels) — sinon deck texte
+      if (hasVisualPool(agentId)) {
+        return (
+          <>
+            <PhaseHead name={agent?.name} title={agentTitle(agent, lang)} step={`${T.stepClassif}${enrichMode ? T.enrichSuffix : ""}`} right={`${verdicts.length} ✓`} onBack={backToSpace} backTitle={T.backTitle} />
+            <div className="phase-body">
+              {verdicts.length === 0 && <p className="sub">{enrichMode ? T.enrichIntro : ""}{T.visualIntro}</p>}
+              {vInterp && <p className="interp">✦ {T.tasteSoFar} — {vInterp}</p>}
+              {!vArtefact ? (
+                <div className="card"><p className="card-hint" style={{ textAlign: "center", margin: "30px 0" }}>{T.loadingNext}</p></div>
+              ) : (
+                <>
+                  <div className="card">
+                    <img className="card-img" src={vArtefact.imageUrl} alt="" />
+                    <div className="card-credit"><a href={vArtefact.mobbinUrl} target="_blank" rel="noopener noreferrer">{T.seenIn(vArtefact.app)} ↗</a></div>
+                    <div className="card-stim">{vArtefact.framing}</div>
+                  </div>
+                  <textarea className="reason" value={cardReason} onChange={(e) => setCardReason(e.target.value)} placeholder={T.reasonPlaceholder} />
+                  <div className="geste-row">
+                    {GESTE_KEYS.map((k) => (
+                      <button key={k} className={`geste ${k}`} onClick={() => recordVisualVerdict(k)} disabled={vBusy}>
+                        <span className="geste-label">{T[k]}</span>
+                        <span className="geste-hint">{k === "garde" ? T.gardeHint : k === "jette" ? T.jetteHint : T.recombineHint}</span>
+                      </button>
+                    ))}
+                  </div>
+                  <div className="actions">
+                    <button className="ghost" onClick={skipVisual} disabled={vBusy}>{T.skipArtefact}</button>
+                    {verdicts.length >= 3 && <button className="ghost" onClick={() => setView("injection")} disabled={vBusy}>{T.endClassif}</button>}
+                  </div>
+                </>
+              )}
+              {error && <p className="err">{error}</p>}
+            </div>
+          </>
+        );
+      }
       const card = deck?.cards[cardIdx];
       return (
         <>
@@ -502,6 +601,10 @@ export default function Page() {
               </div>
             </div>
             {error && <p className="err">{error}</p>}
+            <div className="recap">
+              <div className="recap-title">{T.recapTitle}</div>
+              <div className="recap-row">{T.sigInterview(exchanges)} · {T.sigReactions(verdicts.length)} · {T.sigRefs(injections.length + (draft.label.trim() ? 1 : 0))}</div>
+            </div>
             <div className="actions">
               <button onClick={generate} disabled={busy || !enough}>{busy ? T.genBusy : enrichMode ? T.genRegen : T.genNew}</button>
             </div>
@@ -544,7 +647,7 @@ export default function Page() {
           </div>
           {exchanges >= 3 && (
             <div className="actions">
-              <button className="ghost" onClick={() => setView("classification")} disabled={busy}>{T.toClassification}</button>
+              <button className="ghost" onClick={() => { setView("classification"); if (hasVisualPool(agentId)) fetchNextArtefact(agentId, verdicts, vShown); }} disabled={busy}>{T.toClassification}</button>
             </div>
           )}
         </div>
