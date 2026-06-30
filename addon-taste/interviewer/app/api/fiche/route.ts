@@ -91,7 +91,21 @@ export async function POST(req: Request) {
   const inj = renderInjection(mergedInjections);
   if (inj) parts.push("=== INJECTION (révélé actif) ===\n\n" + inj);
 
-  const content: any[] = [{ type: "text", text: parts.join("\n\n") + "\n\nProduis maintenant la fiche." }];
+  // Enrichissement : si une fiche existe déjà (passe précédente OU twin importé),
+  // on la donne comme base à affiner — on ne repart jamais de zéro (sinon « enrichir »
+  // un twin importé l'écraserait, puisque ses inputs bruts ne sont pas en base).
+  const enriching = !!prior?.fiche?.trim();
+  if (enriching) {
+    parts.unshift(
+      "=== FICHE ACTUELLE (base à enrichir — garde l'acquis, intègre les nouveaux signaux, ne repars pas de zéro) ===\n\n" +
+        prior!.fiche
+    );
+  }
+
+  const closing = enriching
+    ? "\n\nProduis maintenant la fiche ENRICHIE : repars de la fiche actuelle, garde ce qui tient, intègre les nouveaux signaux ci-dessus, et n'invente rien que le matériau ne soutienne."
+    : "\n\nProduis maintenant la fiche.";
+  const content: any[] = [{ type: "text", text: parts.join("\n\n") + closing }];
   for (const i of newInjects) {
     if (i.image?.data && i.image?.media_type) {
       content.push({ type: "text", text: `Image injectée — « ${i.label} » (${i.stance}) :` });
