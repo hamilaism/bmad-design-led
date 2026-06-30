@@ -14,3 +14,13 @@ Le goût est **clé sur une personne, pas sur un projet** : il se capture en int
 Une app Next.js autonome qui mène l'entretien (verbal + réaction à des images) et génère une **fiche de jumeau** en markdown. **Déployable sur Vercel** ; l'invité n'a **pas besoin de compte** — la clé Anthropic vit côté serveur. Voir `interviewer/README.md` pour le lancement local, le déploiement et la persistance optionnelle (Supabase).
 
 Le moteur d'entretien et un jeu d'agents-exemples (avec leurs « amorces » de provocation par métier) sont dans `interviewer/lib/agents.ts` — à adapter aux rôles de ton projet.
+
+## Structure
+
+| Dossier | Quoi | Publié ? |
+|---|---|---|
+| `protocol/` | **Le framework** : le protocole en 3 temps (entretien · classification · injection) + les **artefacts par agent**. Voir `protocol/README.md`. Sources auditées en `*.source.md`. | ✅ (sauf `*.source.md`) |
+| `interviewer/` | **L'app** Next.js qui mène les **3 temps** (entretien · classification · injection) et génère la fiche. Déployable Vercel, l'invité n'a pas de compte. | ✅ |
+| `twins/` | **Les résultats** : les fiches captées (couche *Goût*, clée sur une personne). `twins/<personne>/<agent>.md`. | ❌ privé (gitignoré) |
+
+> **On publie le framework, pas les résultats.** Le protocole et l'app sont partageables ; les fiches de goût (les tiennes, celles de tes potes) restent privées.

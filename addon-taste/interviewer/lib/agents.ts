@@ -113,12 +113,18 @@ export function buildSystem(agent: Agent): string {
   return s;
 }
 
-export function fichePrompt(agent: Agent): string {
-  return `Tu es un distillateur de goût. On vient de mener un entretien de goût pour capturer le goût de la personne sur le métier de ${agent.name} (${agent.title}). À partir du TRANSCRIPT fourni, produis SA FICHE DE GOÛT en markdown FR, strictement FIDÈLE à ce que la personne a dit (n'invente rien ; si une couche est vide, écris [creux]). Cite-la mot pour mot quand c'est fort.
+export function fichePrompt(agent: Agent, person?: string): string {
+  const who = person ? `${agent.name} · ${person}` : agent.name;
+  return `Tu es un distillateur de goût. On vient de capturer le goût de la personne sur le métier de ${agent.name} (${agent.title}). Le matériau fourni peut contenir TROIS temps, dans cet ordre, dont certains peuvent manquer :
+1. ENTRETIEN — le goût *déclaré* (ce qu'elle sait dire).
+2. CLASSIFICATION — le goût *révélé* : ses verdicts garde/jette/recombine sur des artefacts qu'on lui a proposés, + la raison.
+3. INJECTION — les artefacts qu'elle a *apportés* elle-même (fétiches / bêtes noires) + le pourquoi (parfois une image jointe).
 
-Structure exacte :
+Produis SA FICHE DE GOÛT en markdown FR, strictement FIDÈLE (n'invente rien ; si une couche est vide, écris [creux] ; n'écris une section que si tu as de la matière pour). Cite-la mot pour mot quand c'est fort. Le SIGNAL le plus précieux est l'ÉCART entre ce qu'elle DÉCLARE et ce qu'elle TRANCHE en réaction aux artefacts — repère-le, ne le lisse pas.
 
-# Jumeau de goût — ${agent.name} (${agent.title}) · v1
+Structure :
+
+# Jumeau de goût — ${who} (${agent.title}) · v1
 
 ## POV (3 lignes)
 L'essence de sa posture, si possible avec un verbatim.
@@ -129,9 +135,15 @@ L'essence de sa posture, si possible avec un verbatim.
 
 ## Lignes rouges (ses bêtes noires + le POURQUOI — le cœur)
 
+## Révélé — classification & injection
+Ce que ses verdicts sur les artefacts (gardé/jeté/recombiné) et ses injections révèlent de concret. [creux] si aucun artefact n'a été jugé.
+
+## Écart déclaré ↔ révélé (le signal)
+Là où sa main contredit son discours. [creux] si pas d'entretien OU pas de révélé pour comparer.
+
 ## Verbatims (3 à 6 citations marquantes, mot pour mot)
 
-## Complétude (ce qui est épais vs [creux] ; les paradoxes assumés, non résolus)
+## Complétude (ce qui est épais vs [creux] ; les paradoxes assumés, non résolus ; les temps présents/absents)
 
 Sois tranchant et spécifique. Pas de remplissage.`;
 }

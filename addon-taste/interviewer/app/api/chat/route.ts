@@ -1,5 +1,5 @@
-import { anthropic, MODEL } from "@/lib/anthropic";
 import { AGENTS, buildSystem } from "@/lib/agents";
+import { streamChat } from "@/lib/llm";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -20,31 +20,8 @@ export async function POST(req: Request) {
   if (!agent) return new Response("Agent inconnu.", { status: 400 });
   if (!Array.isArray(messages)) return new Response("Messages manquants.", { status: 400 });
 
-  const system = buildSystem(agent);
-  const encoder = new TextEncoder();
-
-  const stream = new ReadableStream({
-    async start(controller) {
-      try {
-        const ant = await anthropic.messages.create({
-          model: MODEL,
-          max_tokens: 1200,
-          system,
-          messages,
-          stream: true,
-        });
-        for await (const event of ant) {
-          if (event.type === "content_block_delta" && event.delta.type === "text_delta") {
-            controller.enqueue(encoder.encode(event.delta.text));
-          }
-        }
-      } catch (e: any) {
-        controller.enqueue(encoder.encode("\n\n[erreur serveur : " + (e?.message || "inconnue") + "]"));
-      } finally {
-        controller.close();
-      }
-    },
-  });
+  // streamChat parle au provider actif (Anthropic ou gateway compatible-OpenAI).
+  const stream = streamChat({ system: buildSystem(agent), messages, maxTokens: 1200 });
 
   return new Response(stream, {
     headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store" },

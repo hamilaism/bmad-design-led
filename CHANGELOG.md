@@ -2,6 +2,20 @@
 
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/). Versionné en SemVer.
 
+## [0.2.0] — 2026-06-30
+
+### Ajouté
+- **Addon goût — protocole en 3 temps** : entretien *(déclaré)* · classification *(juger des artefacts)* · injection *(apporter les siens)*. Machinerie + artefacts par agent généralisés dans `addon-taste/protocol/README.md`.
+- **App d'entretien rendue agnostique** (`addon-taste/interviewer/`), zéro lock-in sur 3 axes :
+  - **Modèle** (`LLM_PROVIDER`) — Anthropic (Opus 4.8) **ou** toute gateway compatible-OpenAI (OpenAI, OpenRouter, passerelle d'entreprise, **ou un modèle local** type Ollama/LM Studio). `lib/llm.ts`.
+  - **Stockage** (`STORE`) — Supabase **ou** n'importe quel Postgres (hébergé **ou local**) **ou** aucun. `lib/store.ts`.
+  - **Hébergement** — build `output: standalone` + `Dockerfile` → Docker, VPS, Render, Railway, Netlify, Vercel… au choix.
+- **Verrou de profil par PIN** — prénom + code à 4 chiffres (hashé côté serveur) : identifie + protège une personnalité, rouvrir/enrichir exige le bon code.
+- README clé-en-main de l'app (les 3 axes, variables d'env, schéma, déploiement).
+
+### Notes
+- Les fiches captées (couche *Goût*, `addon-taste/twins/`) et les sources couplées au projet d'origine (`*.source.md`) restent **hors-git** : ce repo ship la *machinerie*, pas le *remplissage*.
+
 ## [0.1.1] — 2026-06-27
 
 ### Ajouté
