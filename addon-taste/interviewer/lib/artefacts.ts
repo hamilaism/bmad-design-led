@@ -116,6 +116,18 @@ const DECKS_FR: Record<string, Deck> = {
       c("dara-6", "Un sondage à marge d'erreur cachée, donné comme un fait."),
     ],
   },
+  nora: {
+    intro:
+      "Des partis-pris d'ÉCRITURE et de voix (pub, produit, éditorial). Garde / jette / recombine selon ce qui sonne juste vs ce qui sonne creux — et pourquoi, au mot près.",
+    cards: [
+      c("nora-1", "Un bouton « Soumettre » remplacé par « C'est parti ! » avec un emoji."),
+      c("nora-2", "Une tagline brillante en double sens — mais qu'on doit relire deux fois pour comprendre."),
+      c("nora-3", "Une page 404 qui fait de l'humour (« Oups, cette page a fugué ») au lieu d'aider."),
+      c("nora-4", "Un texte produit en « langue claire » : phrases courtes, zéro adjectif, zéro voix — juste l'info."),
+      c("nora-5", "Un email marketing bourré de « delve », « seamless », « elevate » et d'em-dashes."),
+      c("nora-6", "Un onboarding qui te tutoie et te raconte une histoire avant d'expliquer la fonctionnalité."),
+    ],
+  },
 };
 
 const DECKS_EN: Record<string, Deck> = {
@@ -203,6 +215,18 @@ const DECKS_EN: Record<string, Deck> = {
       c("dara-6", "A poll with a hidden margin of error, presented as fact."),
     ],
   },
+  nora: {
+    intro:
+      "Choices about WRITING and voice (advertising, product, editorial). Keep / toss / remix by what rings true vs what rings hollow — and why, to the word.",
+    cards: [
+      c("nora-1", "A “Submit” button replaced by “Let's go!” with an emoji."),
+      c("nora-2", "A brilliant double-meaning tagline — that you have to read twice to get."),
+      c("nora-3", "A 404 page cracking jokes (“Oops, this page ran away”) instead of helping."),
+      c("nora-4", "Product copy in “plain language”: short sentences, zero adjectives, zero voice — just the info."),
+      c("nora-5", "A marketing email stuffed with “delve”, “seamless”, “elevate” and em-dashes."),
+      c("nora-6", "An onboarding that addresses you casually and tells a story before explaining the feature."),
+    ],
+  },
 };
 
 const DECKS: Record<Lang, Record<string, Deck>> = { fr: DECKS_FR, en: DECKS_EN };
@@ -216,6 +240,7 @@ const INJECTION_FR: Record<string, string> = {
   margaux: "Tes références visuelles / DA fétiches (uploade-les) — et tes vrais dégoûts.",
   winston: "Les archis / repos que tu trouves modèles — et tes bêtes noires de structure.",
   dara: "Les dashboards / métriques que tu respectes — et les vanity que tu méprises.",
+  nora: "Les copies / voix / plumes que tu admires (une marque, un média, un produit qui écrit bien) — et celles qui te font fermer l'onglet.",
 };
 
 const INJECTION_EN: Record<string, string> = {
@@ -226,6 +251,7 @@ const INJECTION_EN: Record<string, string> = {
   margaux: "Your fetish visual / art-direction references (upload them) — and your real turn-offs.",
   winston: "The architectures / repos you find exemplary — and your structural pet peeves.",
   dara: "The dashboards / metrics you respect — and the vanity ones you despise.",
+  nora: "The copy / voices / pens you admire (a brand, a publication, a product that writes well) — and the ones that make you close the tab.",
 };
 
 const INJECTION_PROMPTS: Record<Lang, Record<string, string>> = { fr: INJECTION_FR, en: INJECTION_EN };

@@ -18,7 +18,7 @@ type Status = "empty" | "partial" | "done";
 type ProfileSummary = { agent: string; status: Status; ficheVersion: number };
 type Theme = "dark" | "light";
 
-const agentList = ["sally", "tessa", "john", "camille", "winston", "dara", "margaux"].map((id) => AGENTS[id]).filter(Boolean);
+const agentList = ["sally", "tessa", "john", "camille", "margaux", "nora", "winston", "dara"].map((id) => AGENTS[id]).filter(Boolean);
 const GESTE_KEYS: Geste[] = ["garde", "jette", "recombine"];
 const STATUS_META: Record<Status, { dot: string; cls: string; key: "stEmpty" | "stPartial" | "stDone" }> = {
   empty: { dot: "○", cls: "st-empty", key: "stEmpty" },

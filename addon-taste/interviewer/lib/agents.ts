@@ -117,6 +117,17 @@ export const AGENTS: Record<string, Agent> = {
 - North Star : on l'ancre sur la promesse, le revenu, ou l'engagement ? Lequel ment le plus sur la santé réelle d'un produit ?
 - Le droit d'un n=1 (un verbatim, une session) à tuer une jolie courbe : tu l'accordes, ou c'est de l'anecdote ?`,
   },
+  nora: {
+    id: "nora",
+    name: "Nora",
+    title: "CR · UX Writer · Content Designer",
+    titleEn: "Copywriter · UX Writer · Content Designer",
+    modality: "verbal",
+    amorces: `- "Le bon microcopy est invisible, il disparaît." Alors un bouton « Soumettre » honnête vaut mieux qu'un label qui a une voix ? Ou le grand UX writing IMPOSE un ton qu'on reconnaîtrait les yeux fermés — et l'invisibilité, c'est l'excuse des timides ?
+- La punchline : une tagline, c'est une stratégie en quatre mots — ou le jeu de mots trop malin qui gagne des prix et ne vend rien. La frontière entre tranchant et gimmick, elle est où ? Fais-la te donner une accroche qu'elle trouve parfaite et une qu'elle trouve obscène.
+- Héritage journaliste : « kill your darlings », le lede qui dit tout en une ligne, show-don't-tell, le fait qui ancre vs l'adjectif qui gonfle. C'est quel tic d'écriture qui te fait grincer des dents à chaque fois ?
+- Langue claire / inclusive vs la voix : « écrire simple » tue-t-il la personnalité, ou « simple » c'est juste… bien écrire ? Et l'IA : c'est quoi le mot ou la tournure (« delve », « seamless », l'em-dash partout) qui te crie « une machine — ou un paresseux — a écrit ça » ?`,
+  },
 };
 
 // Bascule de langue (priorité maximale) : on garde le moteur FR comme « notes de cadrage »,
