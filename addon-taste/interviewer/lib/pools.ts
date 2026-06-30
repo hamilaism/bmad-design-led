@@ -169,6 +169,143 @@ export const POOLS: Record<string, Artefact[]> = {
       },
     },
   ],
+  john: [
+    {
+      id: "john-oku",
+      axis: "pricing à la conviction vs optimisation",
+      app: "Oku",
+      file: "john/john-pricing-oku.webp",
+      mobbinUrl: "https://mobbin.com/screens/5a7c2e81-8aa0-4cf1-812c-8bea5439593c",
+      framing: {
+        fr: "Un pricing qui dit « aide-nous à payer les factures, soutiens une équipe indé ». Posture honnête qui fidélise, ou amateurisme qui laisse de l'argent sur la table ?",
+        en: "Pricing that says “help us pay the bills, support an indie team”. Honest posture that builds loyalty, or amateurism leaving money on the table?",
+      },
+      essence: {
+        fr: "pricing à la conviction (indie, « soutiens-nous »)",
+        en: "conviction-led pricing (indie, “support us”)",
+      },
+    },
+    {
+      id: "john-opentable",
+      axis: "tiers B2B / le pricing comme produit",
+      app: "OpenTable",
+      file: "john/john-tiers-opentable.webp",
+      mobbinUrl: "https://mobbin.com/screens/36c5d9d4-6b3c-48be-a862-204b845e47ca",
+      framing: {
+        fr: "Trois tiers B2B avec des frais au couvert imbriqués. La grille fait le boulot de vente, ou elle noie le client sous la complexité ?",
+        en: "Three B2B tiers with nested per-cover fees. Does the grid do the selling, or drown the customer in complexity?",
+      },
+      essence: {
+        fr: "pricing 3-tiers B2B complexe (frais imbriqués)",
+        en: "complex 3-tier B2B pricing (nested fees)",
+      },
+    },
+    {
+      id: "john-mixpanel",
+      axis: "pricing à l'usage",
+      app: "Mixpanel",
+      file: "john/john-usage-mixpanel.webp",
+      mobbinUrl: "https://mobbin.com/screens/ed1c88ba-3a66-4029-bb9b-0bf228ffea42",
+      framing: {
+        fr: "Un pricing à l'usage : tu glisses ton volume, le prix suit. Aligné sur la valeur reçue, ou angoissant car imprévisible ?",
+        en: "Usage-based pricing: slide your volume, the price follows. Aligned with value received, or anxiety-inducing because unpredictable?",
+      },
+      essence: {
+        fr: "pricing à l'usage (curseur de volume)",
+        en: "usage-based pricing (volume slider)",
+      },
+    },
+    {
+      id: "john-churnkey",
+      axis: "pricing à la valeur / ROI",
+      app: "Churnkey",
+      file: "john/john-value-churnkey.webp",
+      mobbinUrl: "https://mobbin.com/screens/fb3f5f54-8d6d-4fdc-99ad-69bde8a7a683",
+      framing: {
+        fr: "Un prix justifié par un « ROI 600 % attendu » affiché en gros. Ça ancre la valeur, ou ça promet un chiffre que personne ne tiendra ?",
+        en: "A price justified by “600% ROI expected” shown big. Does it anchor value, or promise a number no one will hit?",
+      },
+      essence: {
+        fr: "pricing à la valeur, vendu au ROI promis",
+        en: "value pricing sold on promised ROI",
+      },
+    },
+    {
+      id: "john-reddit",
+      axis: "bloat vs focus",
+      app: "Reddit",
+      file: "john/john-bloat-reddit.webp",
+      mobbinUrl: "https://mobbin.com/screens/4162aa9a-e586-48f1-bafe-2d9a764ef5b9",
+      framing: {
+        fr: "Un écran de réglages à rallonge, option sur option. Pouvoir donné à l'utilisateur, ou produit obèse qui n'a jamais su dire non ?",
+        en: "An endless settings screen, option after option. Power handed to the user, or an obese product that never learned to say no?",
+      },
+      essence: {
+        fr: "prolifération de réglages (le produit obèse)",
+        en: "settings sprawl (the obese product)",
+      },
+    },
+    {
+      id: "john-wolt",
+      axis: "boucle de croissance / referral",
+      app: "Wolt",
+      file: "john/john-referral-wolt.webp",
+      mobbinUrl: "https://mobbin.com/screens/24604f4e-4d98-433c-970f-9acf67d7734f",
+      framing: {
+        fr: "« Invite un ami, gagne des crédits. » Boucle de croissance saine, ou growth-hack qui transforme tes users en VRP non payés ?",
+        en: "“Invite a friend, earn credits.” Healthy growth loop, or a growth-hack that turns your users into unpaid salespeople?",
+      },
+      essence: {
+        fr: "boucle de referral give-get (croissance)",
+        en: "give-get referral loop (growth)",
+      },
+    },
+    {
+      id: "john-todoist",
+      axis: "gating freemium",
+      app: "Todoist",
+      file: "john/john-gating-todoist.webp",
+      mobbinUrl: "https://mobbin.com/screens/3352ce6e-8e08-4ed9-b0c5-9027f7640f8c",
+      framing: {
+        fr: "Une fonctionnalité utile bloquée en plein usage : « c'est du Premium ». Freemium honnête, ou rançon sur un besoin que tu as créé ?",
+        en: "A useful feature blocked mid-use: “that's Premium”. Honest freemium, or ransom on a need you created?",
+      },
+      essence: {
+        fr: "gating freemium d'une feature en plein usage",
+        en: "freemium gating of a feature mid-use",
+      },
+    },
+    {
+      id: "john-peanut",
+      axis: "micro-paiement / monétisation au contenu",
+      app: "Peanut",
+      file: "john/john-paywall-peanut.webp",
+      mobbinUrl: "https://mobbin.com/screens/d9f9079c-6a93-4413-8665-ff2302577b17",
+      framing: {
+        fr: "Payer 1,48 € pour débloquer UN post. Micro-monétisation juste (l'auteur est payé), ou expérience fragmentée en péage permanent ?",
+        en: "Pay €1.48 to unlock ONE post. Fair micro-monetisation (the author gets paid), or an experience fragmented into a permanent toll?",
+      },
+      essence: {
+        fr: "paywall au post (micro-paiement de contenu)",
+        en: "per-post paywall (content micro-payment)",
+      },
+    },
+    {
+      id: "john-ngl",
+      axis: "éthique de la monétisation",
+      app: "NGL",
+      file: "john/john-monetize-ngl.webp",
+      mobbinUrl: "https://mobbin.com/screens/75194d7f-e3e6-4135-878e-b238ff848b1d",
+      framing: {
+        fr: "Une app ado qui monnaie la curiosité : « paie pour des indices sur qui t'a écrit », 6,98 €/semaine. Business malin, ou exploitation que tu refuses ?",
+        en: "A teen app monetising curiosity: “pay for hints on who messaged you”, €6.98/week. Clever business, or exploitation you refuse?",
+      },
+      essence: {
+        fr: "monétisation de la curiosité (indices payants)",
+        en: "monetising curiosity (paid hints)",
+      },
+    },
+  ],
 };
 
 export function poolFor(agentId: string): Artefact[] | null {
