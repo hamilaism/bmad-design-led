@@ -82,14 +82,14 @@ const DECKS_FR: Record<string, Deck> = {
   },
   margaux: {
     intro:
-      "Des partis-pris VISUELS. Réagis à l'œil, au grain, à la main — pas au discours. (Tu pourras uploader tes propres visuels à l'injection juste après.)",
+      "Des partis-pris de DIRECTION ARTISTIQUE de marque (identité, typo, campagne, territoire). Garde / jette / recombine selon ce qui POSE une marque vs ce qui décore — et pourquoi, à l'œil. (Tu pourras uploader tes propres références à l'injection juste après.)",
     cards: [
-      c("margaux-1", "La bordure 1px contrastée partout : des cards bordées comme base."),
-      c("margaux-2", "Le glassmorphism : gros blur, transparence, profondeur verre."),
-      c("margaux-3", "L'avarice chromatique : un seul accent sourd, presque austère, « pas instagrammable »."),
-      c("margaux-4", "Le candy : chaque section sa teinte saturée, ça pète dans le feed."),
-      c("margaux-5", "L'éditorial print riche (magazine) plaqué sur une UI mobile."),
-      c("margaux-6", "Le grain de film / la texture ajoutée sur un fond plat."),
+      c("margaux-1", "Un logo réduit à un seul monogramme, sans nom écrit : confiance, ou arrogance prématurée ?"),
+      c("margaux-2", "Une identité portée à 80 % par UNE typographie forte — logo discret, presque pas de couleur."),
+      c("margaux-3", "L'avarice chromatique : un seul accent sourd, austère, « pas instagrammable »."),
+      c("margaux-4", "Une marque-monde déclinée partout (affiche, packaging, film) à partir d'un seul motif."),
+      c("margaux-5", "Une identité qui CASSE sa propre grille pour un coup de DA, au prix de la cohérence."),
+      c("margaux-6", "La DA de marque diluée en « clean SaaS » dès qu'elle descend dans l'interface."),
     ],
   },
   winston: {
@@ -181,14 +181,14 @@ const DECKS_EN: Record<string, Deck> = {
   },
   margaux: {
     intro:
-      "VISUAL choices. React with the eye, the grain, the hand — not the discourse. (You'll be able to upload your own visuals at injection right after.)",
+      "Choices about brand ART DIRECTION (identity, type, campaign, territory). Keep / toss / remix by what SETS a brand vs what merely decorates — and why, by eye. (You'll be able to upload your own references at injection right after.)",
     cards: [
-      c("margaux-1", "The contrasted 1px border everywhere: bordered cards as the baseline."),
-      c("margaux-2", "Glassmorphism: heavy blur, transparency, glassy depth."),
-      c("margaux-3", "Chromatic thrift: a single muted accent, almost austere, “not instagrammable”."),
-      c("margaux-4", "Candy: each section its own saturated hue, popping in the feed."),
-      c("margaux-5", "Rich print editorial (magazine) slapped onto a mobile UI."),
-      c("margaux-6", "Film grain / texture added over a flat background."),
+      c("margaux-1", "A logo reduced to a single monogram, no name spelled out: confidence, or premature arrogance?"),
+      c("margaux-2", "An identity carried 80% by ONE strong typeface — discreet logo, almost no colour."),
+      c("margaux-3", "Chromatic thrift: a single muted accent, austere, “not instagrammable”."),
+      c("margaux-4", "A brand-world extended everywhere (poster, packaging, film) from a single motif."),
+      c("margaux-5", "An identity that BREAKS its own grid for a stroke of art direction, at the cost of consistency."),
+      c("margaux-6", "Brand art direction diluted into “clean SaaS” the moment it enters the interface."),
     ],
   },
   winston: {
@@ -237,7 +237,7 @@ const INJECTION_FR: Record<string, string> = {
   tessa: "Tes design systems préférés (Radix, Carbon, le tien…) — et ceux que tu détestes.",
   john: "Les produits dont tu admires la stratégie / la prio — et les « obèses qui font tout à moitié ».",
   camille: "Les marques / manifestes / mouvements culturels que tu admires — et ceux qui « sonnent faux ».",
-  margaux: "Tes références visuelles / DA fétiches (uploade-les) — et tes vrais dégoûts.",
+  margaux: "Tes identités / DA de marque fétiches (logos, typos, campagnes, mondes de marque — uploade-les) — et celles qui sonnent creux.",
   winston: "Les archis / repos que tu trouves modèles — et tes bêtes noires de structure.",
   dara: "Les dashboards / métriques que tu respectes — et les vanity que tu méprises.",
   nora: "Les copies / voix / plumes que tu admires (une marque, un média, un produit qui écrit bien) — et celles qui te font fermer l'onglet.",
@@ -248,7 +248,7 @@ const INJECTION_EN: Record<string, string> = {
   tessa: "Your favourite design systems (Radix, Carbon, your own…) — and the ones you hate.",
   john: "The products whose strategy / prioritisation you admire — and the “bloated ones that do everything halfway”.",
   camille: "The brands / manifestos / cultural movements you admire — and the ones that “ring false”.",
-  margaux: "Your fetish visual / art-direction references (upload them) — and your real turn-offs.",
+  margaux: "Your fetish brand identities / art direction (logos, type, campaigns, brand worlds — upload them) — and the ones that ring hollow.",
   winston: "The architectures / repos you find exemplary — and your structural pet peeves.",
   dara: "The dashboards / metrics you respect — and the vanity ones you despise.",
   nora: "The copy / voices / pens you admire (a brand, a publication, a product that writes well) — and the ones that make you close the tab.",

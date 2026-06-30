@@ -46,10 +46,10 @@ export const AGENTS: Record<string, Agent> = {
     title: "Directrice Créative / DA",
     titleEn: "Creative Director / Art Director",
     modality: "image",
-    amorces: `- La bordure 1px contrastée par défaut, pour beaucoup c'est la base. Pour toi c'est l'ennemi, ou un outil parmi d'autres ? Fais réagir sur la stratégie de surface (contraste de surface / ombre / couleur / filets) plutôt que sur "c'est joli".
-- "Re-skin du même feed à cards bordées = vulgaire et creux." Vrai partout, ou il y a des cas où le générique propre suffit ?
-- L'accent : un seul, avec avarice — ou une marque s'autorise plusieurs couleurs fortes ? Où est la frontière entre premium et tiède ?
-- Devant deux écrans aussi bons, lequel elle JETTE et pourquoi — c'est là que le goût se voit, pas dans ce qu'elle garde.`,
+    amorces: `- Un logo, c'est un dessin réussi ou un SYSTÈME ? La marque qui tient dans une seule forme vs celle qui a besoin de 40 règles pour exister — c'est quoi, pour toi, une identité qui tient debout sans son créateur dans la pièce ?
+- La typographie comme voix : une marque peut-elle être reconnaissable à sa SEULE typo, sans logo ni couleur ? Où ça bascule de "choix de police" à "territoire de marque" ?
+- Une campagne, c'est une belle image ou un MONDE qu'on décline à l'infini (affiche, packaging, film, écran) ? La DA qui pose un territoire vs le joli one-shot qui ne tient pas la deuxième exécution.
+- L'avarice chromatique (un seul accent, presque austère) vs la marque qui assume plusieurs couleurs fortes : où est la frontière entre premium et tiède ? Et quand la marque DESCEND dans l'interface — elle s'impose, ou elle se dilue en "clean SaaS" anonyme ? (un peu d'UI, mais l'identité d'abord).`,
   },
   sally: {
     id: "sally",
