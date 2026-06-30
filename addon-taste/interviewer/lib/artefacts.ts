@@ -1,5 +1,8 @@
 // Le canal RÉVÉLÉ : classification (juger des artefacts) + injection (apporter les siens).
 // Méthode : voir ../../protocol/README.md. Decks dérivés des « objets natifs » par agent.
+// Bilingue (FR/EN) : ce que la personne LIT est traduit ; les ids restent stables.
+
+import type { Lang } from "./i18n";
 
 export type Geste = "garde" | "jette" | "recombine";
 
@@ -28,7 +31,7 @@ export type Injection = {
 
 const c = (id: string, label: string, hint?: string): Card => ({ id, label, hint });
 
-export const DECKS: Record<string, Deck> = {
+const DECKS_FR: Record<string, Deck> = {
   sally: {
     intro:
       "Je te montre des partis-pris d'interface croisés ailleurs (affordance, parcours, prévisibilité). Pour chacun : garde / jette / recombine — et surtout POURQUOI, au grain.",
@@ -115,8 +118,97 @@ export const DECKS: Record<string, Deck> = {
   },
 };
 
+const DECKS_EN: Record<string, Deck> = {
+  sally: {
+    intro:
+      "I'll show you interface choices seen elsewhere (affordance, flow, predictability). For each: keep / toss / remix — and above all WHY, at the grain.",
+    cards: [
+      c("sally-1", "A 5-screen onboarding that explains everything BEFORE letting you into the app."),
+      c("sally-2", "An app that reinvents 'back': no back arrow, a custom swipe you have to learn."),
+      c("sally-3", "An empty state that says “nothing tonight” instead of falling back to “this week”."),
+      c("sally-4", "A social counter shown at 0 (0 likes, 0 attendees) under every item."),
+      c("sally-5", "A micro-interaction adding 200 ms of texture (bounce, grain) to a gesture done 50×/day."),
+      c("sally-6", "A form that asks for everything at once vs one that walks you field by field."),
+    ],
+  },
+  tessa: {
+    intro:
+      "STRUCTURE decisions taken in real design systems. Keep / toss / remix by what makes a true system vs a pile of components.",
+    cards: [
+      c("tessa-1", "`green-700` hard-coded inside a button component."),
+      c("tessa-2", "A 40-role semantic layer: `feedback.warning.subtle.bg.hover`."),
+      c("tessa-3", "Dark mode built by duplicating the whole palette (vs re-aliasing)."),
+      c("tessa-4", "A “design system” = an isolated Storybook only front-end devs ever open."),
+      c("tessa-5", "Tokens named by value (`blue`, `big`) rather than by intent (`action.primary`)."),
+      c("tessa-6", "Figma crowned as source of truth, production follows Figma."),
+    ],
+  },
+  john: {
+    intro:
+      "Real PRODUCT decisions (the business dimension). Keep / toss / remix: ship it? kill it? killer feature or bloat?",
+    cards: [
+      c("john-1", "A public roadmap with 30 “planned” features, never dated."),
+      c("john-2", "A product that KILLS its most-used feature because it dilutes the vision."),
+      c("john-3", "A RICE prioritisation where every score is a guess dressed up as a number."),
+      c("john-4", "Three-tier pricing (Free / Pro / Team) vs usage-based."),
+      c("john-5", "A feature shipped because the A/B test wins 2%, with no conviction behind it."),
+      c("john-6", "An MVP that adds a friction screen ON PURPOSE to boost retention."),
+    ],
+  },
+  camille: {
+    intro:
+      "BARE brand postures (the intent, not the visual). Keep / toss / remix by the bet on meaning — and what it says about a consumer/culture trend.",
+    cards: [
+      c("camille-1", "A militant outdoor brand that names an enemy (throwaway consumerism)."),
+      c("camille-2", "A bank's purpose: “we're here for you”, corporate-reassuring."),
+      c("camille-3", "A luxury house: discretion, closed club, nothing explained."),
+      c("camille-4", "A belligerent challenger drink: cold irony against the leader."),
+      c("camille-5", "A streetwear label: gatekept belonging — you're in or out."),
+      c("camille-6", "A “we hate meetings” SaaS: functional enemy, anti-corporate tone."),
+    ],
+  },
+  margaux: {
+    intro:
+      "VISUAL choices. React with the eye, the grain, the hand — not the discourse. (You'll be able to upload your own visuals at injection right after.)",
+    cards: [
+      c("margaux-1", "The contrasted 1px border everywhere: bordered cards as the baseline."),
+      c("margaux-2", "Glassmorphism: heavy blur, transparency, glassy depth."),
+      c("margaux-3", "Chromatic thrift: a single muted accent, almost austere, “not instagrammable”."),
+      c("margaux-4", "Candy: each section its own saturated hue, popping in the feed."),
+      c("margaux-5", "Rich print editorial (magazine) slapped onto a mobile UI."),
+      c("margaux-6", "Film grain / texture added over a flat background."),
+    ],
+  },
+  winston: {
+    intro:
+      "SCHEMA / data-structure decisions. Keep / toss / remix (“I merge these tables”, “I split that one in two”) + why.",
+    cards: [
+      c("winston-1", "A 40-table, ultra-normalised schema for a 3-screen app."),
+      c("winston-2", "A god-table `users` with 60 nullable columns."),
+      c("winston-3", "A polymorphic relation (`commentable_type`, `commentable_id`)."),
+      c("winston-4", "All logic in the database: RLS + security-definer functions, the app goes dumb."),
+      c("winston-5", "JSONB everywhere to dodge migrations."),
+      c("winston-6", "Copy-pasting the same query 5× rather than abstracting too early."),
+    ],
+  },
+  dara: {
+    intro:
+      "A wall of EVIDENCE: numeric claims about the real world. For each: “I decide on it / I distrust it / I'm missing X” + why.",
+    cards: [
+      c("dara-1", "“+300% growth” — without the starting base."),
+      c("dara-2", "A stock chart with a truncated Y-axis to dramatise the drop."),
+      c("dara-3", "n=30 in the off-season: do you call it on the directional, or wait?"),
+      c("dara-4", "“40% of betas come back in week 2” vs ONE bartender saying “I can't do without it”."),
+      c("dara-5", "A 20-metric dashboard with “events created” shown in big."),
+      c("dara-6", "A poll with a hidden margin of error, presented as fact."),
+    ],
+  },
+};
+
+const DECKS: Record<Lang, Record<string, Deck>> = { fr: DECKS_FR, en: DECKS_EN };
+
 // Ce qu'on invite la personne à INJECTER (phase 3), par agent.
-export const INJECTION_PROMPTS: Record<string, string> = {
+const INJECTION_FR: Record<string, string> = {
   sally: "Tes apps/flows fétiches (dont tu voles la matière) — et ceux qui te font fermer l'app sur le champ.",
   tessa: "Tes design systems préférés (Radix, Carbon, le tien…) — et ceux que tu détestes.",
   john: "Les produits dont tu admires la stratégie / la prio — et les « obèses qui font tout à moitié ».",
@@ -126,9 +218,26 @@ export const INJECTION_PROMPTS: Record<string, string> = {
   dara: "Les dashboards / métriques que tu respectes — et les vanity que tu méprises.",
 };
 
-export function deckFor(agentId: string): Deck | null {
-  return DECKS[agentId] ?? null;
+const INJECTION_EN: Record<string, string> = {
+  sally: "Your fetish apps/flows (whose texture you steal) — and the ones that make you close the app on the spot.",
+  tessa: "Your favourite design systems (Radix, Carbon, your own…) — and the ones you hate.",
+  john: "The products whose strategy / prioritisation you admire — and the “bloated ones that do everything halfway”.",
+  camille: "The brands / manifestos / cultural movements you admire — and the ones that “ring false”.",
+  margaux: "Your fetish visual / art-direction references (upload them) — and your real turn-offs.",
+  winston: "The architectures / repos you find exemplary — and your structural pet peeves.",
+  dara: "The dashboards / metrics you respect — and the vanity ones you despise.",
+};
+
+const INJECTION_PROMPTS: Record<Lang, Record<string, string>> = { fr: INJECTION_FR, en: INJECTION_EN };
+
+const DEFAULT_INJECTION: Record<Lang, string> = {
+  fr: "Les exemples que tu admires — et ceux que tu rejettes.",
+  en: "The examples you admire — and the ones you reject.",
+};
+
+export function deckFor(agentId: string, lang: Lang = "fr"): Deck | null {
+  return DECKS[lang]?.[agentId] ?? DECKS.fr[agentId] ?? null;
 }
-export function injectionPromptFor(agentId: string): string {
-  return INJECTION_PROMPTS[agentId] ?? "Les exemples que tu admires — et ceux que tu rejettes.";
+export function injectionPromptFor(agentId: string, lang: Lang = "fr"): string {
+  return INJECTION_PROMPTS[lang]?.[agentId] ?? INJECTION_PROMPTS.fr[agentId] ?? DEFAULT_INJECTION[lang] ?? DEFAULT_INJECTION.fr;
 }

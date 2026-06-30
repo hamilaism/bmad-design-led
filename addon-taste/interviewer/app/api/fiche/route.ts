@@ -46,7 +46,8 @@ export async function POST(req: Request) {
   } catch {
     return Response.json({ error: "JSON invalide." }, { status: 400 });
   }
-  const { agentId, accessCode, name, pin, messages, classification, injection } = body || {};
+  const { agentId, accessCode, name, pin, messages, classification, injection, lang } = body || {};
+  const l = lang === "en" ? "en" : "fr";
 
   if (process.env.ACCESS_CODE && accessCode !== process.env.ACCESS_CODE) {
     return Response.json({ error: "Code d'accès invalide." }, { status: 401 });
@@ -116,7 +117,7 @@ export async function POST(req: Request) {
   let fiche = "";
   try {
     fiche = await complete({
-      system: fichePrompt(agent, person || undefined),
+      system: fichePrompt(agent, person || undefined, l),
       messages: [{ role: "user", content }],
       maxTokens: 4000,
     });

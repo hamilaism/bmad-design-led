@@ -15,6 +15,9 @@ Format inspiré de [Keep a Changelog](https://keepachangelog.com/). Versionné e
 - **Espace perso multi-profils** : une personne (prénom + code à 4 chiffres) gère N profils depuis un tableau de bord (statut ○ à faire / ◐ en cours / ✅ fait), les enrichit (fiche régénérée v2/v3, inputs accumulés), et les supprime. Schéma `persons` + `profiles`.
 - **Collecte opérateur** : `/api/export?key=…` (toutes les fiches de l'instance, JSON ou markdown). Chaque instance ne collecte que sa propre DB.
 - **Transparence** : bandeau clair (« collectée par {OPERATOR_NAME} » / générique / « non collectée »), + téléchargement de sa fiche par le participant.
+- **Bilingue FR/EN** : bascule de langue qui couvre l'UI **et** ce que la personne lit (cartes de classification, prompts d'injection) **et** le modèle — l'entretien se mène et la fiche se génère dans la langue choisie (les amorces d'agents restent en FR comme notes de cadrage, adaptées à la volée). Auto-détection navigateur, mémorisée. `lib/i18n.ts`.
+- **Thème clair / sombre** : bascule mémorisée, suit la préférence système par défaut, sans flash au chargement (script inline dans le layout).
+- **L'enrichissement repart de la fiche existante** (passe précédente ou twin importé) au lieu de la réécrire de zéro.
 
 ### Notes
 - Les fiches captées (couche *Goût*, `addon-taste/twins/`) et les sources couplées au projet d'origine (`*.source.md`) restent **hors-git** : ce repo ship la *machinerie*, pas le *remplissage*.

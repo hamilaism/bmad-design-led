@@ -11,7 +11,7 @@ export async function POST(req: Request) {
   } catch {
     return new Response("JSON invalide.", { status: 400 });
   }
-  const { agentId, accessCode, messages } = body || {};
+  const { agentId, accessCode, messages, lang } = body || {};
 
   if (process.env.ACCESS_CODE && accessCode !== process.env.ACCESS_CODE) {
     return new Response("Code d'accès invalide.", { status: 401 });
@@ -20,8 +20,9 @@ export async function POST(req: Request) {
   if (!agent) return new Response("Agent inconnu.", { status: 400 });
   if (!Array.isArray(messages)) return new Response("Messages manquants.", { status: 400 });
 
+  const l = lang === "en" ? "en" : "fr";
   // streamChat parle au provider actif (Anthropic ou gateway compatible-OpenAI).
-  const stream = streamChat({ system: buildSystem(agent), messages, maxTokens: 1200 });
+  const stream = streamChat({ system: buildSystem(agent, l), messages, maxTokens: 1200 });
 
   return new Response(stream, {
     headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store" },

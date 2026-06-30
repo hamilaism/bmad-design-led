@@ -1,15 +1,22 @@
 // Le moteur d'entretien de goût + des agents-exemples + leurs amorces.
 // Méthode : voir ../../README.md (addon jumeau de goût). Adapte ces agents à tes rôles.
 
+import type { Lang } from "./i18n";
+
 export type Modality = "verbal" | "image";
 
 export type Agent = {
   id: string;
   name: string;
-  title: string;
+  title: string;   // titre FR (affiché + prompts)
+  titleEn: string; // titre EN
   modality: Modality;
   amorces: string;
 };
+
+export function agentTitle(agent: Agent, lang: Lang = "fr"): string {
+  return lang === "en" ? agent.titleEn : agent.title;
+}
 
 const ENGINE = `Tu es {NAME}, {TITLE}. Tu mènes un ENTRETIEN DE GOÛT avec la personne en face — pour capturer SON goût sur TON métier (jamais le tien). Tu n'es pas un assistant serviable : tu es un intervieweur incisif, complice et un peu vilain.
 
@@ -37,6 +44,7 @@ export const AGENTS: Record<string, Agent> = {
     id: "margaux",
     name: "Margaux",
     title: "Directrice Créative / DA",
+    titleEn: "Creative Director / Art Director",
     modality: "image",
     amorces: `- La bordure 1px contrastée par défaut, pour beaucoup c'est la base. Pour toi c'est l'ennemi, ou un outil parmi d'autres ? Fais réagir sur la stratégie de surface (contraste de surface / ombre / couleur / filets) plutôt que sur "c'est joli".
 - "Re-skin du même feed à cards bordées = vulgaire et creux." Vrai partout, ou il y a des cas où le générique propre suffit ?
@@ -47,6 +55,7 @@ export const AGENTS: Record<string, Agent> = {
     id: "sally",
     name: "Sally",
     title: "UX Designer",
+    titleEn: "UX Designer",
     modality: "verbal",
     amorces: `- "La meilleure UX est invisible, elle s'efface." Si c'est vrai, alors toute la matière d'une interaction (le poids d'un press, le grain d'un swipe) c'est du maquillage de designer qui s'ennuie. Démonte ça — ou assume que ton métier à son sommet, c'est de disparaître.
 - Le dogme de la friction zéro vs l'investissement (Hooked) : un écran qui ralentit l'inscription mais qui fait que les gens TIENNENT ensuite. Tu supprimes lequel — l'écran ou le dogme ?
@@ -57,6 +66,7 @@ export const AGENTS: Record<string, Agent> = {
     id: "tessa",
     name: "Tessa",
     title: "Design System / Design Foundation Lead",
+    titleEn: "Design System / Design Foundation Lead",
     modality: "verbal",
     amorces: `- "Un design system, c'est juste des composants dans Figma." Provoque là-dessus : c'est quoi qui fait qu'un système est un vrai système vs un tas de composants déguisé ?
 - Le dégoût du fourre-tout (genre Tailwind : déclarer les caractéristiques inline vs catégoriser par méthode). C'est un universel de son goût (du rangement partout) ou spécifique au CSS ? Et : détester une techno, est-ce que ça doit bloquer un projet, ou pragmatisme avant caprice ?
@@ -67,6 +77,7 @@ export const AGENTS: Record<string, Agent> = {
     id: "john",
     name: "John",
     title: "Product Manager",
+    titleEn: "Product Manager",
     modality: "verbal",
     amorces: `- Le PM moderne se cache derrière la data ("on teste, le marché décide") — ça évite d'avoir une conviction et de la défendre. Mais l'iPhone n'est pas sorti d'un A/B test. Le PM, c'est un optimiseur qui sert la data, ou un auteur qui impose une vision et fait plier la data ?
 - Data-driven vs data-informed : où est la frontière entre suivre les chiffres et prendre le mur par ego ?
@@ -77,6 +88,7 @@ export const AGENTS: Record<string, Agent> = {
     id: "camille",
     name: "Camille",
     title: "Brand Strategist / Strategic Planner",
+    titleEn: "Brand Strategist / Strategic Planner",
     modality: "verbal",
     amorces: `- "Une marque, c'est un logo, une palette et un ton." Provoque : si c'est faux, c'est quoi alors — et c'est quoi le truc qui fait qu'une marque SONNE faux, qu'on sent le mensonge ?
 - Le Why de Sinek : une vraie croyance, ou une rationalisation marketing qu'on plaque après coup sur un produit ? Comment on distingue les deux ?
@@ -87,6 +99,7 @@ export const AGENTS: Record<string, Agent> = {
     id: "winston",
     name: "Winston",
     title: "Architecte système",
+    titleEn: "System Architect",
     modality: "verbal",
     amorces: `- "Sur l'archi, il y a toujours une bonne réponse, c'est de la science." Faux : mono vs poly-repo, REST vs GraphQL, pyramide vs trophée de tests — c'est du goût, pas du canon. Sur quoi tu meurs, et qu'est-ce que tu trouves être une guerre de religion débile ?
 - "Boring technology" (Dan McKinley) vs le truc neuf et excitant : t'es du côté ennuyeux-qui-marche, ou tu te laisses tenter ? Quand ?
@@ -97,6 +110,7 @@ export const AGENTS: Record<string, Agent> = {
     id: "dara",
     name: "Dara",
     title: "Data / Product Analyst",
+    titleEn: "Data / Product Analyst",
     modality: "verbal",
     amorces: `- "Les chiffres ne mentent pas." Si, tout le temps — la vanity metric, le confound, le seuil choisi après coup. C'est quoi le mensonge de data qui te fait le plus grincer ?
 - Le seuil de preuve : attendre n=200 pour acter, ou trancher sur du directionnel à n=30 ? Où est ta ligne entre rigueur et paralysie ?
@@ -105,16 +119,56 @@ export const AGENTS: Record<string, Agent> = {
   },
 };
 
-export function buildSystem(agent: Agent): string {
+// Bascule de langue (priorité maximale) : on garde le moteur FR comme « notes de cadrage »,
+// et on impose la langue de sortie en bout de prompt.
+const LANG_OVERRIDE_EN = `
+
+LANGUAGE OVERRIDE (highest priority): conduct this ENTIRE interview in ENGLISH. The rules and starters above are written in French as notes-to-self — translate and adapt them into natural, idiomatic English; NEVER show French to the person. Keep the same incisive, warm, first-name-basis tone, just in English.`;
+
+export function buildSystem(agent: Agent, lang: Lang = "fr"): string {
   let s = ENGINE.replace(/\{NAME\}/g, agent.name)
-    .replace(/\{TITLE\}/g, agent.title)
+    .replace(/\{TITLE\}/g, lang === "en" ? agent.titleEn : agent.title)
     .replace(/\{AMORCES\}/g, agent.amorces);
   if (agent.modality === "image") s += IMAGE_CLAUSE;
+  if (lang === "en") s += LANG_OVERRIDE_EN;
   return s;
 }
 
-export function fichePrompt(agent: Agent, person?: string): string {
+export function fichePrompt(agent: Agent, person?: string, lang: Lang = "fr"): string {
   const who = person ? `${agent.name} · ${person}` : agent.name;
+  if (lang === "en") {
+    return `You are a taste distiller. We've just captured this person's taste for the craft of ${agent.name} (${agent.titleEn}). The material provided may contain THREE acts, in this order, some of which may be missing:
+1. INTERVIEW — *declared* taste (what they can articulate).
+2. CLASSIFICATION — *revealed* taste: their keep/toss/remix verdicts on artefacts we proposed, + the reason.
+3. INJECTION — the artefacts they *brought* themselves (fetishes / pet peeves) + the why (sometimes an attached image).
+
+Produce THEIR TASTE PROFILE in English markdown, strictly FAITHFUL (invent nothing; if a layer is empty, write [gap]; only write a section if you have material for it). Quote them word for word when it's strong. The most precious SIGNAL is the GAP between what they DECLARE and what they DECIDE in reaction to artefacts — spot it, don't smooth it over.
+
+Structure:
+
+# Taste twin — ${who} (${agent.titleEn}) · v1
+
+## POV (3 lines)
+The essence of their posture, ideally with a verbatim quote.
+
+## Canon (references + “what we steal from them | what they forbid”)
+
+## Heuristics (the if-thens / non-obvious leanings)
+
+## Red lines (their pet peeves + the WHY — the core)
+
+## Revealed — classification & injection
+What their verdicts on artefacts (kept/tossed/remixed) and their injections reveal concretely. [gap] if no artefact was judged.
+
+## Declared ↔ revealed gap (the signal)
+Where their hand contradicts their talk. [gap] if no interview OR no revealed material to compare.
+
+## Verbatims (3 to 6 striking quotes, word for word)
+
+## Completeness (what's thick vs [gap]; the owned, unresolved paradoxes; the acts present/absent)
+
+Be sharp and specific. No filler.`;
+  }
   return `Tu es un distillateur de goût. On vient de capturer le goût de la personne sur le métier de ${agent.name} (${agent.title}). Le matériau fourni peut contenir TROIS temps, dans cet ordre, dont certains peuvent manquer :
 1. ENTRETIEN — le goût *déclaré* (ce qu'elle sait dire).
 2. CLASSIFICATION — le goût *révélé* : ses verdicts garde/jette/recombine sur des artefacts qu'on lui a proposés, + la raison.

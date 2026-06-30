@@ -10,6 +10,19 @@
   --user: #21342b;
 }
 
+/* Thème clair (les pastilles colorées garde/jette/statuts restent self-contained) */
+:root[data-theme="light"] {
+  --bg: #f6f6f3;
+  --panel: #ffffff;
+  --panel2: #eef0ed;
+  --text: #1b1b20;
+  --muted: #66666f;
+  --accent: #1f7a57;
+  --accent-deep: #16503d;
+  --border: #e1e1db;
+  --user: #d9f0e3;
+}
+
 * { box-sizing: border-box; }
 
 html, body {
@@ -170,3 +183,13 @@ button.full { width: 100%; padding: 13px; font-weight: 600; }
 .st-empty { background: var(--panel2); color: var(--muted); }
 .st-partial { background: #3a2f1f; color: #f0c980; }
 .st-done { background: var(--accent-deep); color: #cdeede; }
+
+/* --- Barre d'outils (thème + langue) --- */
+.toolbar { display: flex; justify-content: flex-end; align-items: center; gap: 8px; padding: 10px 0 0; }
+.toolbtn {
+  background: var(--panel2); border: 1px solid var(--border); color: var(--text);
+  width: 36px; height: 30px; border-radius: 8px; font-size: 15px; padding: 0; line-height: 1;
+}
+.langseg { display: inline-flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.langseg button { background: var(--panel2); color: var(--muted); border-radius: 0; padding: 6px 11px; font-size: 12px; font-weight: 600; }
+.langseg button.on { background: var(--accent); color: #fff; }
