@@ -193,3 +193,6 @@ button.full { width: 100%; padding: 13px; font-weight: 600; }
 .langseg { display: inline-flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
 .langseg button { background: var(--panel2); color: var(--muted); border-radius: 0; padding: 6px 11px; font-size: 12px; font-weight: 600; }
 .langseg button.on { background: var(--accent); color: #fff; }
+/* Verrouillée pendant un parcours : la langue active reste lisible, l'autre grisée */
+.langseg.locked button:disabled { opacity: 0.45; cursor: not-allowed; }
+.langseg.locked button.on:disabled { opacity: 1; cursor: not-allowed; }

@@ -84,6 +84,7 @@ type Dict = {
   errImage: string;
   // Divers
   defaultInjectionPrompt: string;
+  langLocked: string;
 };
 
 const FR: Dict = {
@@ -155,6 +156,7 @@ const FR: Dict = {
   errNetwork: "Erreur réseau.",
   errImage: "Image illisible.",
   defaultInjectionPrompt: "Les exemples que tu admires — et ceux que tu rejettes.",
+  langLocked: "Langue verrouillée pendant le parcours — reviens à ton espace pour la changer.",
 };
 
 const EN: Dict = {
@@ -226,6 +228,7 @@ const EN: Dict = {
   errNetwork: "Network error.",
   errImage: "Unreadable image.",
   defaultInjectionPrompt: "The examples you admire — and the ones you reject.",
+  langLocked: "Language locked during the flow — go back to your space to change it.",
 };
 
 export const UI: Record<Lang, Dict> = { fr: FR, en: EN };

@@ -324,7 +324,19 @@ export default function Page() {
   }
 
   const exchanges = messages.filter((m) => m.role === "user").length;
-  const toggles = <Toggles lang={lang} theme={theme} onLang={applyLang} onTheme={() => applyTheme(theme === "dark" ? "light" : "dark")} />;
+  // La langue se choisit avant/entre les profils, jamais en plein parcours (sinon
+  // l'entretien, les verdicts et la fiche seraient à cheval sur deux langues).
+  const langLocked = view !== "setup" && view !== "space";
+  const toggles = (
+    <Toggles
+      lang={lang}
+      theme={theme}
+      langLocked={langLocked}
+      lockMsg={T.langLocked}
+      onLang={applyLang}
+      onTheme={() => applyTheme(theme === "dark" ? "light" : "dark")}
+    />
+  );
 
   // ============ rendu par vue ============
   function renderView() {
@@ -548,15 +560,15 @@ export default function Page() {
   );
 }
 
-function Toggles({ lang, theme, onLang, onTheme }: { lang: Lang; theme: Theme; onLang: (l: Lang) => void; onTheme: () => void }) {
+function Toggles({ lang, theme, langLocked, lockMsg, onLang, onTheme }: { lang: Lang; theme: Theme; langLocked?: boolean; lockMsg?: string; onLang: (l: Lang) => void; onTheme: () => void }) {
   return (
     <div className="toolbar">
       <button className="toolbtn" onClick={onTheme} title={theme === "dark" ? "Light" : "Dark"} aria-label="theme">
         {theme === "dark" ? "☀️" : "🌙"}
       </button>
-      <div className="langseg">
-        <button className={lang === "fr" ? "on" : ""} onClick={() => onLang("fr")}>FR</button>
-        <button className={lang === "en" ? "on" : ""} onClick={() => onLang("en")}>EN</button>
+      <div className={`langseg${langLocked ? " locked" : ""}`} title={langLocked ? lockMsg : undefined}>
+        <button className={lang === "fr" ? "on" : ""} disabled={langLocked} onClick={() => onLang("fr")}>FR</button>
+        <button className={lang === "en" ? "on" : ""} disabled={langLocked} onClick={() => onLang("en")}>EN</button>
       </div>
     </div>
   );
