@@ -184,7 +184,7 @@ const FR: Dict = {
   sigRefs: (n) => `${n} apport${n > 1 ? "s" : ""}`,
   sigInterview: (n) => `${n} échange${n > 1 ? "s" : ""} d'entretien`,
   tierVisual: "🖼️ écrans réels",
-  tierText: "📝 simplifié · beta",
+  tierText: "📝 classification texte",
   seeDoc: "voir la doc",
 };
 
@@ -270,7 +270,7 @@ const EN: Dict = {
   sigRefs: (n) => `${n} addition${n > 1 ? "s" : ""}`,
   sigInterview: (n) => `${n} interview exchange${n > 1 ? "s" : ""}`,
   tierVisual: "🖼️ real screens",
-  tierText: "📝 simplified · beta",
+  tierText: "📝 text classification",
   seeDoc: "see the docs",
 };
 
