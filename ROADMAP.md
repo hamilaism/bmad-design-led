@@ -35,6 +35,18 @@ Un système BMAD design-led où **chaque agent est animé par un vrai goût capt
 
 Résultat : des **agents IA avec un point de vue — pas la moyenne d'internet.**
 
+## Le second axe — la VOIX (pas seulement le goût)
+
+Une personnalité = **le goût** (*ce qu'elle juge*) **+ la voix** (*comment elle le dit* : lexique, registre — cru / posé / imagé —, rythme, tics, métaphores, et **ce qu'elle ne dit jamais**). On a bâti le goût ; **la voix est le second axe**, à capturer puis injecter.
+
+- **Découpage propre** : la **VOIX est au niveau de la PERSONNE** (tous ses twins sonnent comme elle) ; le **GOÛT est au niveau du MÉTIER**.
+- **La matière est déjà là** : le transcript de l'entretien EST la personne dans ses propres mots. → distiller une **« fiche de voix »** à côté de la fiche de goût, l'injecter comme une **couche VOIX** (miroir du cadre de posture qui rend l'intervieweur incisif). Couche additive, ça ne casse rien.
+- **Pourquoi ça compte** : un twin qui *décide* comme toi mais *parle* générique n'est qu'un demi-twin. Le test « on reconnaît l'auteur les yeux fermés » ne passe que si la voix est là.
+- **Principe fondateur (à ne jamais perdre)** : l'entretien pousse à la **VERBOSITÉ MAXIMALE** — plus la personne parle, plus la capture est riche, pour le goût **et** pour la voix. C'est le carburant des deux axes.
+
+### Party mode 🎉 — la démo + la validation ultimes
+Mettre plusieurs twins dans la même pièce sur une décision, chacun réagissant **dans sa vraie voix** : le Backend sec (« non. tu vas le regretter. »), la DA lyrique sur trois lignes, le PM qui tue la moitié des idées, le DevOps qui grommelle « et qui maintient ça à 3h du mat ». En 30 secondes on **SAIT** s'ils sonnent comme de vrais gens distincts ou comme la même IA sous onze chapeaux. Le « on reconnaît l'auteur » devient **social, instantané, marrant** — et prouve d'un coup que la couche voix + la couche goût tiennent. C'est la feature qui rend le monde BMAD *vivant*.
+
 ## Le point de bascule
 
 **Le go/no-go après les tests.** S'il est positif → on attaque le **②-impact** : le moment où le projet passe de « outil de capture » à « des agents qui décident avec ton goût ». Le reste (pools, vidéos, public) est de l'intendance ; l'impact, c'est le cœur.
