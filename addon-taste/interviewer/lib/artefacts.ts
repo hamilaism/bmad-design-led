@@ -71,14 +71,14 @@ const DECKS_FR: Record<string, Deck> = {
   },
   camille: {
     intro:
-      "Des postures de marque NUES (l'intention, pas le visuel). Garde / jette / recombine selon le pari de sens — et ce que ça dit d'une tendance de conso/culture.",
+      "Des postures de marque NUES — l'intention, l'ennemi, l'archétype, jamais le visuel. Pour chacune : je garde · je jette · j'en vole un bout — et surtout POURQUOI. Ce qui m'intéresse, c'est le pari de sens : ce qu'il tranche, ce qu'il interdit, et ce qu'il trahit d'une tendance de conso, de culture, de société.",
     cards: [
-      c("camille-1", "Une marque outdoor militante qui désigne un ennemi (le consumérisme jetable)."),
-      c("camille-2", "Un purpose de banque : « on est là pour vous », corporate-rassurant."),
-      c("camille-3", "Une maison de luxe : discrétion, club fermé, on n'explique rien."),
-      c("camille-4", "Un challenger boisson belliqueux : ironie froide contre le leader."),
-      c("camille-5", "Un label streetwear : appartenance gatekeepée — tu es dedans ou dehors."),
-      c("camille-6", "Un SaaS « on déteste les réunions » : ennemi fonctionnel, ton anti-corporate."),
+      c("camille-1", "Une marque d'eau en bouteille se dote d'un Why qui vise haut — « reconnecter l'humanité à la nature » — longtemps après le lancement, sur un produit inchangé. Le sens arrive par le récit, pas par le produit.", "Un Why peut se construire par le récit et tirer tout le reste vers le haut, ou un sens sans aucune preuve dans le produit s'effondre au premier regard ?"),
+      c("camille-2", "Une marque qui désigne un ennemi nommé et lui crache dessus à chaque prise de parole — quitte à insulter la moitié du marché qui, elle, aime bien l'ennemi en question.", "Un ennemi qui soude une tribu et te rend inévitable, ou de la pub gratuite au leader et un client sur deux qui te ferme la porte ?"),
+      c("camille-3", "Une marque qui appuie pile sur une honte intime — « ton haleine, ta calvitie, le fait que tu n'es pas assez » — parce que la peur convertit trois fois mieux que le rêve.", "Nommer une vraie douleur, c'est le levier le plus honnête et le plus puissant qu'on ait, ou une marque qui grandit en creusant le complexe empoisonne le lien même qu'elle vend ?"),
+      c("camille-4", "Deux briefs sur la table. L'un promet un chiffre qu'on pourrait te reprocher au tribunal (« livré en 30 min ou c'est offert »). L'autre murmure « vivez l'instant » : joli, intouchable, engageant à rien.", "Une promesse qu'on peut te faire manger si tu ne la tiens pas, ou une évocation qui sonne bien et ne parie rien ?"),
+      c("camille-5", "Une marque met sa propre faiblesse en avant au lieu de la cacher — « on est plus chers », « c'est moche mais ça dure », « numéro deux, alors on se démène ». L'anti-marketing comme posture.", "L'aveu qui désarme et rend crédible quand tout le monde survend, ou une modestie qui grave ton défaut dans le marbre et t'interdit à jamais de faire rêver ?"),
+      c("camille-6", "Une banque sort un manifeste militant sur la justice sociale au pic exact où toutes les marques le font — le message est peut-être sincère, mais il arrive en plein troupeau.", "Une posture qui capte un vrai basculement de société au bon moment, ou un opportunisme qui SONNE FAUX parce que tout le monde dit déjà la même chose ?"),
     ],
   },
   margaux: {
@@ -95,14 +95,50 @@ const DECKS_FR: Record<string, Deck> = {
   },
   winston: {
     intro:
-      "Des décisions de SCHÉMA / structure de données. Garde / jette / recombine (« je fusionne ces tables », « je casse celle-là en deux ») + pourquoi.",
+      "Des décisions d'ARCHI livrées avec leur contexte : taille d'équipe, trafic, budget, ce que ça coûte vraiment. Pour chacune : garde / jette / recombine — et surtout POURQUOI. Pas de bonne réponse planquée ici : je veux voir où ta lame tranche, et ce que t'acceptes de PERDRE en tranchant.",
     cards: [
-      c("winston-1", "Un schéma à 40 tables ultra-normalisé pour une app de 3 écrans."),
-      c("winston-2", "Une god-table `users` à 60 colonnes nullable."),
-      c("winston-3", "Une relation polymorphe (`commentable_type`, `commentable_id`)."),
-      c("winston-4", "Toute la logique en base : RLS + fonctions security-definer, l'app devient bête."),
-      c("winston-5", "Du JSONB partout pour éviter les migrations."),
-      c("winston-6", "Copier-coller la même requête 5× plutôt que d'abstraire trop tôt."),
+      c("winston-1", "En réunion on te demande, net : monolithe ou micro-services pour le nouveau produit ? Tu réponds « ça dépend », tu sors une matrice de critères, et tu renvoies la décision à un atelier la semaine prochaine.", "Nuance d'expert qui refuse de trancher à l'arrache, ou planque élégante pour ne jamais porter le chapeau quand ça foire ?"),
+      c("winston-2", "Équipe de 5, 3 000 utilisateurs, une file de jobs à traiter. L'un veut Postgres + un cron qui tourne toutes les minutes ; l'autre monte Kafka + un worker Flink « pour être prêts à scaler ».", "Le cron chiant qui shippe ce soir et tiendra dix ans, ou le vrai outil qui t'épargne la réécriture le jour où ça décolle — décollage qui n'arrivera peut-être jamais ?"),
+      c("winston-3", "Startup, 6 devs, deadline dans deux mois. Il faut de l'auth (SSO, MFA, reset) et du paiement. Un dev veut tout coder maison « pour maîtriser et pas cracher 800 €/mois » ; l'autre branche Clerk + Stripe et passe à autre chose.", "Le SaaS qui te coûte un loyer mais t'achète trois mois, ou le build maison que tu possèdes — jusqu'au jour où tu déterres une faille dans TON propre code de MFA ?"),
+      c("winston-4", "Équipe de 4, 200 utilisateurs. Pour « bien séparer les responsabilités », on découpe le produit en 8 services qui se parlent en HTTP, chacun sa base, son déploiement, ses logs. La feature qui faisait la moitié de la valeur est maintenant à cheval sur trois d'entre eux.", "Frontières propres qui laisseront grandir chaque bout, ou complexité qui a juste déménagé du code vers le réseau — où le moindre ajout touche désormais trois repos ?"),
+      c("winston-5", "Un script de 200 lignes sans tests, un Google Sheet et un cron qui recollent deux systèmes chaque nuit. C'est moche, personne n'ose y toucher, et ça tient la prod sans broncher depuis 18 mois. Le nouveau veut tout réécrire « proprement » en service versionné et testé.", "Bricolage honteux à remplacer avant qu'il t'explose à la gueule, ou preuve qu'un truc jetable qui MARCHE vaut mieux qu'un truc « robuste » pas encore écrit ?"),
+      c("winston-6", "Deux options encaissent la charge pareil. La première : une base serverless propriétaire, magique en démo mais impossible à quitter sans tout réécrire. La seconde : Postgres banal, plus de plomberie à faire soi-même mais on en sort en un week-end. Le fondateur veut la magique pour le pitch investisseurs.", "On juge sur ce que ça fait aujourd'hui, ou sur ce que ça coûte d'en SORTIR demain — quitte à choisir la moins brillante juste parce qu'elle est réversible ?"),
+    ],
+  },
+  kai: {
+    intro:
+      "Des décisions de BUILD réelles, croisées ailleurs — celles où deux façons rendent le MÊME écran et où seul ton goût tranche l'invisible (le rendu, la cascade CSS, le poids envoyé, l'accessibilité). Chacune arrive avec son contexte et ce qu'elle coûte. Pour chacune : je garde / je jette / j'en vole un bout — et surtout POURQUOI, au grain.",
+    cards: [
+      c("kai-1", "Une équipe de 3 monte un site vitrine et un blog. Choix par défaut sans discuter : create-next-app, React, 200 kB de JS pour trois pages qui ne bougent jamais.", "Réutiliser le défaut que toute l'équipe maîtrise déjà — sagesse qui livre vite, ou 200 kB qu'aucune de ces trois pages ne justifiera jamais ?"),
+      c("kai-2", "Une équipe de 6 se déchire sur le CSS : les uns collent des classes Tailwind directement dans le JSX, d'autres jurent par le CSS-in-JS scopé au composant, un dernier tient à des feuilles globales qui jouent la cascade et les layers modernes. Le même bouton finit en trois versions.", "Scoper chaque style en local, quitte à ne jamais apprendre la cascade — ou l'épouser, quitte à ce qu'un jour tout le monde se marche dessus ?"),
+      c("kai-3", "Une app interne : trois formulaires et un dashboard. L'équipe passe tout en React Server Components + streaming SSR — bundle client fondu, données chargées au plus près. En échange, le rendu se joue moitié serveur moitié client, et plus un seul bug ne se reproduit pareil en local.", "Le rendu serveur t'a rendu un web plus léger et plus rapide — ou on a réinventé PHP 2005 avec dix couches d'abstraction en plus ?"),
+      c("kai-4", "Un écran qui coupe le souffle : animations partout, transitions léchées, le client valide la maquette en dix secondes. À l'usage : 4 s avant le premier contenu utile, la mise en page qui saute au chargement, rien d'atteignable au clavier. Il veut shipper demain.", "Livrer l'effet « waouh » qui fait vendre — ou tenir la perf et le clavier, quitte à raboter la maquette que tout le monde a déjà adorée ?"),
+      c("kai-5", "Pour un simple sélecteur de dates, un dev tire une librairie de 300 kB qui gère 40 langues et 12 calendriers : deux jours gagnés côté dev, une lib blindée et maintenue. L'utilisateur en 3G télécharge les 300 kB pour cocher un jour dans le mois.", "Deux jours gagnés et une lib éprouvée pour toi, trois cents kilos sur le dos de chaque visiteur : où mets-tu le curseur, ta vélocité ou son temps de chargement ?"),
+      c("kai-6", "Un lead choisit Svelte pour un produit à fort trafic. Recrutement plus dur, moins de librairies, moins de réponses toutes prêtes — mais cinq fois moins de JS envoyé au navigateur. Toute la boîte d'à côté tourne sous React + Next, « comme tout le monde ».", "Prendre le truc que personne ne prend : courage technique, ou caprice qui coûtera cher au prochain qui hérite du code ?"),
+    ],
+  },
+  sam: {
+    intro:
+      "Des décisions BACKEND réelles, chacune avec son contexte et son enjeu (taille d'équipe, trafic, budget, ce que ça coûte). Pour chacune : je garde / je jette / j'en vole un bout — et surtout POURQUOI, au grain. Pas de bonne réponse cachée, juste la tienne.",
+    cards: [
+      c("sam-1", "Une équipe de 3 voit le même bloc de code apparaître pour la 3e fois. Un dev bloque la PR : « on factorise maintenant, sinon on le paiera. » L'autre veut copier-coller une dernière fois et voir si les trois cas divergent vraiment.", "Tu factorises tant que les trois cas sont sous les yeux et frais, ou tu laisses diverger — quitte à te tromper d'abstraction si tu tranches trop tôt ?"),
+      c("sam-2", "Une équipe de 4, 200 utilisateurs, découpe déjà le produit en 8 microservices avec sa propre gateway et son bus d'événements. La moindre petite feature touche 3 repos et exige un déploiement coordonné.", "Tu gardes des frontières nettes et des déploiements indépendants, payés d'avance, ou tu replies tout dans un monolithe — un repo, un déploiement, et la coordination qui disparaît ?"),
+      c("sam-3", "Startup, un seul dev d'astreinte. Il fait tout avec Postgres : file d'attente, cache, recherche plein-texte, même du pseudo-JSON. Un collègue veut sortir Redis + Elasticsearch + Kafka « parce que c'est fait pour ça ».", "Un seul système ennuyeux à opérer et sauvegarder — même en poussant Postgres au-delà de ce pour quoi il est fait, ou l'outil taillé pour chaque besoin — un de plus à exploiter à chaque fois ?"),
+      c("sam-4", "Ton API est consommée par 3 apps en prod, dont deux d'autres équipes. Tu veux renommer un champ moche et virer un endpoint legacy. Le faire proprement = versionner, déprécier 6 mois, prévenir tout le monde.", "Tu livres le renommage propre maintenant et les consommateurs s'adaptent, ou tu honores le contrat — le champ moche et l'endpoint mort portés un an de plus ?"),
+      c("sam-5", "Pour ne plus jamais écrire de migration, l'équipe balance tout dans une colonne JSONB « data ». Le schéma vit dans le code, pas dans la base. Six mois plus tard, personne ne sait plus quels champs existent vraiment.", "Zéro migration et flexibilité totale, quitte à ne plus savoir ce qu'une ligne contient, ou le schéma dans la base — structuré, requêtable, mais chaque changement passe par une migration ?"),
+      c("sam-6", "Deux équipes partagent un modèle « User » via une lib commune. Chaque changement de l'une casse le build de l'autre. Un archi propose de DUPLIQUER le modèle des deux côtés : chacune évolue seule, quitte à ce que les deux versions divergent.", "Une copie que chaque équipe fait évoluer seule, quitte à ce que les deux divergent, ou une seule source de vérité — partagée, mais chaque changement doit être négocié ?"),
+    ],
+  },
+  nadia: {
+    intro:
+      "Des décisions d'infra RÉELLES, avec leur contexte et ce qu'elles coûtent (taille d'équipe, trafic, budget, l'astreinte à 3h du mat). Pour chacune, tranche : je garde / je jette / j'en vole un bout — et surtout POURQUOI, sans langue de bois.",
+    cards: [
+      c("nadia-1", "Une équipe de 4 devs lance un SaaS B2B pour 200 utilisateurs. Ils partent direct sur Kubernetes + Istio, trois environnements, un mois de setup avant la première feature livrée.", "Fondations posées pour le jour où ça scale, ou marteau-pilon dont un seul mec tient le YAML — et un Render/Fly.io aurait shippé en une aprem ?"),
+      c("nadia-2", "3h du mat, la prod est down, le PDG t'écrit. Tu répares en 30 secondes en cliquant dans la console AWS — ou en 20 minutes via la PR Terraform que la CI doit valider.", "Sauver la prod tout de suite, quitte à ce que le correctif n'existe nulle part demain — ou tenir la ligne « tout passe par Git » même quand chaque minute perdue coûte des clients ?"),
+      c("nadia-3", "Chaque microservice arrive avec ses 3 dashboards Grafana et ses 40 alertes. Résultat : 22 écrans, 15 alertes par nuit, et l'astreinte a coupé le son de Slack il y a deux semaines.", "Chaque équipe qui possède et règle ses propres alertes, c'est de la vraie ownership — ou un mur de bruit qui dresse l'astreinte à ignorer la seule alerte qui compte vraiment ?"),
+      c("nadia-4", "Le pipeline CI met 40 minutes : lint, tests, e2e, scan de sécu, build multi-arch. Personne n'ose y toucher. Sur 12 devs, ça fait des heures perdues chaque jour à attendre le petit rond vert.", "Rempart de qualité qu'on ne bradera pas, ou péage que tout le monde subit sans jamais oser virer les 30 min de tests qui ne cassent jamais ?"),
+      c("nadia-5", "L'équipe plateforme impose un « golden path » unique : un seul langage béni, un seul type de base, un template de service obligatoire. Déployer hors des rails, c'est un ticket et trois jours d'attente.", "Chemin doré qui fait gagner un temps fou aux 50 devs produit, ou cage dorée qui interdit le bon outil et transforme la moindre initiative hors-piste en ticket à quémander ?"),
+      c("nadia-6", "Un serveur tourne en prod depuis 437 jours sans reboot, patché à la main, avec des configs que personne n'a documentées. Il marche parfaitement. On l'a même surnommé « Gandalf ».", "Uptime de légende qu'on ne touche surtout pas — ou bombe à retardement que personne ne saura reconstruire le jour où le disque lâche, et qu'il faudrait re-provisionner en code tant qu'il tourne encore ?"),
     ],
   },
   dara: {
@@ -170,14 +206,14 @@ const DECKS_EN: Record<string, Deck> = {
   },
   camille: {
     intro:
-      "BARE brand postures (the intent, not the visual). Keep / toss / remix by the bet on meaning — and what it says about a consumer/culture trend.",
+      "BARE brand postures — the intent, the enemy, the archetype, never the visual. For each: keep · toss · steal a bit — and above all WHY. What I'm after is the bet on meaning: what it decides, what it forbids, and what it betrays about a consumer, cultural, or societal trend.",
     cards: [
-      c("camille-1", "A militant outdoor brand that names an enemy (throwaway consumerism)."),
-      c("camille-2", "A bank's purpose: “we're here for you”, corporate-reassuring."),
-      c("camille-3", "A luxury house: discretion, closed club, nothing explained."),
-      c("camille-4", "A belligerent challenger drink: cold irony against the leader."),
-      c("camille-5", "A streetwear label: gatekept belonging — you're in or out."),
-      c("camille-6", "A “we hate meetings” SaaS: functional enemy, anti-corporate tone."),
+      c("camille-1", "A bottled-water brand gives itself a Why that aims high — “reconnecting humanity with nature” — long after launch, on an unchanged product. The meaning arrives through the story, not the product.", "A Why can be built through narrative and pull everything else up to meet it, or meaning with zero proof in the product collapses the moment anyone looks?"),
+      c("camille-2", "A brand that names an enemy and spits on it in every statement — even if it insults the half of the market that happens to like that enemy.", "An enemy that welds a tribe and makes you unavoidable, or free advertising for the leader and one buyer in two slamming the door?"),
+      c("camille-3", "A brand that presses right on a private shame — “your breath, your baldness, the fact that you're not enough” — because fear converts three times better than the dream.", "Naming a real pain is the most honest and most powerful lever there is, or a brand that grows by deepening the insecurity poisons the very bond it sells?"),
+      c("camille-4", "Two briefs on the table. One promises a number they could take you to court over (“delivered in 30 min or it's free”). The other whispers “live the moment”: pretty, untouchable, committing to nothing.", "A promise they can shove back in your face if you miss it, or an evocation that sounds great and bets nothing?"),
+      c("camille-5", "A brand puts its own weakness up front instead of hiding it — “we're pricier,” “it's ugly but it lasts,” “we're number two, so we try harder.” Anti-marketing as a posture.", "The disarming admission that earns trust when everyone else oversells, or a modesty that carves your flaw in stone and forbids you from ever selling a dream?"),
+      c("camille-6", "A bank drops a militant manifesto on social justice at the exact peak when every brand is doing it — the message may be sincere, but it lands in the middle of the herd.", "A posture catching a real societal shift at the right moment, or opportunism that RINGS FALSE because everyone's already saying the same thing?"),
     ],
   },
   margaux: {
@@ -194,14 +230,50 @@ const DECKS_EN: Record<string, Deck> = {
   },
   winston: {
     intro:
-      "SCHEMA / data-structure decisions. Keep / toss / remix (“I merge these tables”, “I split that one in two”) + why.",
+      "ARCHITECTURE decisions delivered with their context: team size, traffic, budget, what it actually costs. For each: keep / toss / remix — and above all WHY. No right answer hidden here: I want to see where your blade cuts, and what you're willing to LOSE by cutting.",
     cards: [
-      c("winston-1", "A 40-table, ultra-normalised schema for a 3-screen app."),
-      c("winston-2", "A god-table `users` with 60 nullable columns."),
-      c("winston-3", "A polymorphic relation (`commentable_type`, `commentable_id`)."),
-      c("winston-4", "All logic in the database: RLS + security-definer functions, the app goes dumb."),
-      c("winston-5", "JSONB everywhere to dodge migrations."),
-      c("winston-6", "Copy-pasting the same query 5× rather than abstracting too early."),
+      c("winston-1", "In the meeting you're asked, flat out: monolith or microservices for the new product? You answer “it depends”, pull out a criteria matrix, and punt the call to a workshop next week.", "Expert nuance that refuses to shoot from the hip, or an elegant hideout so you never carry the blame when it breaks?"),
+      c("winston-2", "A team of 5, 3,000 users, a queue of jobs to process. One wants Postgres + a cron running every minute; the other stands up Kafka + a Flink worker “to be ready to scale”.", "The boring cron that ships tonight and lasts ten years, or the real tool that spares you the rewrite the day it takes off — a takeoff that may never come?"),
+      c("winston-3", "Startup, 6 devs, deadline in two months. You need auth (SSO, MFA, reset) and payments. One dev wants to build it all in-house “to stay in control and not fork out €800/mo”; the other wires up Clerk + Stripe and moves on.", "The SaaS that costs you rent but buys you three months, or the in-house build you own — until the day you dig up a hole in YOUR own MFA code?"),
+      c("winston-4", "A team of 4, 200 users. To “separate concerns properly”, the product is split into 8 services talking over HTTP, each with its own DB, deploy, and logs. The feature that carried half the value now straddles three of them.", "Clean boundaries that let each piece grow, or complexity that merely moved from the code into the network — where the smallest change now touches three repos?"),
+      c("winston-5", "A 200-line script with no tests, a Google Sheet, and a cron gluing two systems together every night. It's ugly, nobody dares touch it, and it's held prod steady for 18 months. The new hire wants to rewrite it all “properly” as a versioned, tested service.", "Shameful duct-tape to replace before it blows up in your face, or proof that a disposable thing that WORKS beats a “robust” thing you haven't written yet?"),
+      c("winston-6", "Two options handle the load equally. The first: a proprietary serverless DB, magical in the demo but impossible to leave without a full rewrite. The second: plain Postgres, more plumbing to do yourself but you're out in a weekend. The founder wants the magical one for the investor pitch.", "Do you judge on what it does today, or on what it costs to WALK AWAY tomorrow — even if that means picking the less shiny one just because it's reversible?"),
+    ],
+  },
+  kai: {
+    intro:
+      "Real BUILD decisions seen elsewhere — the ones where two approaches render the SAME screen and only your taste settles the invisible (the rendering, the CSS cascade, the weight shipped, accessibility). Each comes with its context and what it costs. For each: keep / toss / steal a bit — and above all WHY, at the grain.",
+    cards: [
+      c("kai-1", "A team of 3 spins up a marketing site and a blog. Default choice, no debate: create-next-app, React, 200 kB of JS for three pages that never move.", "Reuse the default the whole team already masters — wisdom that ships fast, or 200 kB none of these three pages will ever justify?"),
+      c("kai-2", "A team of 6 is at war over CSS: some drop Tailwind classes straight into the JSX, others swear by component-scoped CSS-in-JS, one insists on global stylesheets that play the cascade and modern layers. The same button ends up in three versions.", "Scope every style locally, even if you never learn the cascade — or embrace it, even if one day everyone steps on everyone else?"),
+      c("kai-3", "An internal app: three forms and a dashboard. The team moves everything to React Server Components + streaming SSR — client bundle melted down, data loaded right at the source. In exchange, rendering now runs half on the server, half on the client, and not a single bug reproduces the same way locally.", "Server rendering gave you a lighter, faster web — or did we just reinvent PHP 2005 with ten extra layers of abstraction?"),
+      c("kai-4", "A breathtaking screen: animations everywhere, polished transitions, the client signs off on the mockup in ten seconds. In use: 4 s to first useful content, layout jumping on load, nothing reachable by keyboard. He wants to ship tomorrow.", "Ship the 'wow' that closes the deal — or hold the line on perf and keyboard, even if it means shaving down the mockup everyone already loved?"),
+      c("kai-5", "For a plain date picker, a dev pulls a 300 kB library that handles 40 languages and 12 calendars: two dev-days saved, a battle-tested, maintained lib. The user on 3G downloads all 300 kB to tick one day in a month.", "Two days saved and a proven lib for you, three hundred kilos on every visitor's back: where do you set the cursor, your velocity or their load time?"),
+      c("kai-6", "A lead picks Svelte for a high-traffic product. Harder hiring, fewer libraries, fewer ready-made answers — but five times less JS shipped to the browser. Every other team around runs React + Next, 'like everyone else'.", "Picking the thing nobody picks: technical courage, or a whim that'll cost the next person who inherits the code?"),
+    ],
+  },
+  sam: {
+    intro:
+      "Real BACKEND decisions, each with its context and its stakes (team size, traffic, budget, what it costs). For each: keep / toss / steal a piece — and above all WHY, at the grain. No hidden right answer, just yours.",
+    cards: [
+      c("sam-1", "A team of 3 sees the same block of code show up for the 3rd time. One dev blocks the PR: \"we factor it out now, or we'll pay for it later.\" The other wants to copy-paste it one last time and see if the three cases actually diverge.", "Factor it out while all three cases are fresh in front of you, or let them diverge — at the risk of the wrong abstraction if you commit too early?"),
+      c("sam-2", "A team of 4, 200 users, already splits the product into 8 microservices with its own gateway and event bus. The smallest feature touches 3 repos and needs a coordinated deploy.", "Keep clean boundaries and independent deploys, paid for up front, or fold it all back into a monolith — one repo, one deploy, and the coordination that vanishes?"),
+      c("sam-3", "A startup, a single dev on call. He does everything with Postgres: queue, cache, full-text search, even pseudo-JSON. A colleague wants to pull in Redis + Elasticsearch + Kafka \"because that's what they're for\".", "One boring system to run and back up — even bending Postgres past what it's built for, or the tool built for each job — one more to operate every time?"),
+      c("sam-4", "Your API is consumed by 3 apps in prod, two of them from other teams. You want to rename an ugly field and drop a legacy endpoint. Doing it clean = version it, deprecate for 6 months, warn everyone.", "Ship the clean rename now and let the consumers adapt, or honor the contract — the ugly field and the dead endpoint carried a year longer?"),
+      c("sam-5", "To never write another migration, the team dumps everything into a JSONB \"data\" column. The schema lives in the code, not the database. Six months in, nobody knows which fields actually exist.", "Zero migrations and total flexibility, at the cost of no longer knowing what a row contains, or the schema in the database — structured, queryable, but every change goes through a migration?"),
+      c("sam-6", "Two teams share a \"User\" model through a common lib. Every change by one breaks the other's build. An architect proposes DUPLICATING the model on both sides: each evolves alone, even if the two versions drift apart.", "A copy each team evolves on its own, even if the two drift apart, or a single source of truth — shared, but every change has to be negotiated?"),
+    ],
+  },
+  nadia: {
+    intro:
+      "REAL infra decisions, each with its context and what it costs (team size, traffic, budget, on-call at 3am). For each one, call it: I keep it / I toss it / I steal a piece — and above all WHY, no corporate hedging.",
+    cards: [
+      c("nadia-1", "A team of 4 devs launches a B2B SaaS for 200 users. They go straight to Kubernetes + Istio, three environments, a month of setup before the first feature ships.", "Foundations laid for the day it scales, or a sledgehammer whose YAML one single guy holds — when a Render/Fly.io would've shipped in an afternoon?"),
+      c("nadia-2", "3am, prod is down, the CEO is texting you. You fix it in 30 seconds by clicking in the AWS console — or in 20 minutes through the Terraform PR that CI has to validate.", "Save prod right now, even if the fix exists nowhere tomorrow — or hold the “everything goes through Git” line even as every lost minute costs customers?"),
+      c("nadia-3", "Every microservice ships with its 3 Grafana dashboards and 40 alerts. Result: 22 screens, 15 alerts a night, and on-call muted Slack two weeks ago.", "Each team owning and tuning its own alerts is real ownership — or a wall of noise that trains on-call to ignore the one alert that actually matters?"),
+      c("nadia-4", "The CI pipeline takes 40 minutes: lint, tests, e2e, security scan, multi-arch build. Nobody dares touch it. Across 12 devs, that's hours lost every day waiting on the little green check.", "A quality wall you won't sell out, or a toll everyone endures without ever daring to cut the 30 min of tests that never fail?"),
+      c("nadia-5", "The platform team enforces a single “golden path”: one blessed language, one database type, a mandatory service template. Deploying off the rails means a ticket and a three-day wait.", "A golden path that saves 50 product devs enormous time, or a gilded cage that bans the right tool and turns any off-road initiative into a ticket you have to beg for?"),
+      c("nadia-6", "A server has been running in prod for 437 days without a reboot, hand-patched, with configs no one ever documented. It works perfectly. They even nicknamed it “Gandalf”.", "Legendary uptime you must never touch — or a time bomb no one could rebuild the day the disk dies, that you'd have to re-provision as code while it's still running?"),
     ],
   },
   dara: {
