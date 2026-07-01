@@ -237,7 +237,7 @@ Openings, concessions ("ok but"), emphases, closings.
 ## Never (the negative)
 Registers, words, figures that would never leave their mouth.
 ## Exemplars (3 to 6)
-Pairs "Generic: …" → "${person}: …" — a generic-assistant sentence rewritten in THEIR voice, built from their real verbatims (move the subject, don't bend the voice).
+Pairs "Generic: …" → "${person}: …" — a generic-assistant sentence rewritten in THEIR voice, built from their real verbatims. MOVE THE SUBJECT: the ${person} line borrows the FORM of a verbatim (structure, connectors, rhythm) but talks about SOMETHING ELSE than the corpus — never a copy-paste of a craft verdict (that would smuggle an opinion and break the seal rule). If the corpus is too thin to move the subject without inventing, keep the verbatim but tag it "(raw verbatim — carries a craft opinion)".
 ## Completeness
 Attested vs proposed vs [gap] · corpus bias: provoked speech facing an incisive interviewer — the person is sharper here than their average · crafts covered · capture language.
 
@@ -274,7 +274,7 @@ Ouvertures, concessions (« ok mais »), emphases, clôtures.
 ## Jamais (le négatif)
 Les registres, mots, figures qui ne sortiraient jamais de sa bouche.
 ## Exemplaires (3 à 6)
-Paires « Générique : … » → « ${person} : … » — la phrase générique-assistant réécrite dans SA voix, construite depuis ses verbatims réels (déplace le sujet, ne déforme pas la voix).
+Paires « Générique : … » → « ${person} : … » — la phrase générique-assistant réécrite dans SA voix, construite depuis ses verbatims réels. DÉPLACE LE SUJET : la ligne ${person} emprunte la FORME d'un verbatim (structure, connecteurs, rythme) mais parle d'AUTRE CHOSE que le corpus — jamais un copier-coller d'un verdict métier (l'exemplaire embarquerait une opinion et violerait l'étanchéité). Si le corpus est trop maigre pour déplacer le sujet sans inventer, garde le verbatim mais marque-le « (verbatim brut — opinion métier incluse) ».
 ## Complétude
 Attesté vs proposé vs [creux] · biais du corpus : oral provoqué face à un intervieweur incisif — la personne y est plus tranchante que sa moyenne · métiers couverts · langue de capture.
 
