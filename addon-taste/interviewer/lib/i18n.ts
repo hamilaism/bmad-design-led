@@ -99,6 +99,7 @@ type Dict = {
   sigInterview: (n: number) => string;
   tierVisual: string;
   tierText: string;
+  seeDoc: string;
 };
 
 const FR: Dict = {
@@ -184,6 +185,7 @@ const FR: Dict = {
   sigInterview: (n) => `${n} échange${n > 1 ? "s" : ""} d'entretien`,
   tierVisual: "🖼️ écrans réels",
   tierText: "📝 simplifié · beta",
+  seeDoc: "voir la doc",
 };
 
 const EN: Dict = {
@@ -269,6 +271,7 @@ const EN: Dict = {
   sigInterview: (n) => `${n} interview exchange${n > 1 ? "s" : ""}`,
   tierVisual: "🖼️ real screens",
   tierText: "📝 simplified · beta",
+  seeDoc: "see the docs",
 };
 
 export const UI: Record<Lang, Dict> = { fr: FR, en: EN };

@@ -11,6 +11,7 @@ export type Card = {
   label: string; // l'artefact / le parti-pris à juger
   hint?: string; // sous-texte optionnel
   src?: string;  // image optionnelle (URL) pour les métiers visuels
+  link?: string; // lien optionnel (doc/Figma) pour les « fiches de références nommées »
 };
 
 export type Deck = {
@@ -29,7 +30,7 @@ export type Injection = {
   image?: { media_type: string; data: string }; // upload optionnel (base64)
 };
 
-const c = (id: string, label: string, hint?: string): Card => ({ id, label, hint });
+const c = (id: string, label: string, hint?: string, link?: string): Card => ({ id, label, hint, link });
 
 const DECKS_FR: Record<string, Deck> = {
   sally: {
@@ -46,14 +47,14 @@ const DECKS_FR: Record<string, Deck> = {
   },
   tessa: {
     intro:
-      "Des décisions de STRUCTURE prises dans de vrais design systems. Garde / jette / recombine selon ce qui fait un vrai système vs un tas de composants.",
+      "De VRAIS design systems, connus. Pour chacun : garde (tu leur voles) / jette / recombine — et pourquoi. Clique la doc si tu ne connais pas.",
     cards: [
-      c("tessa-1", "`green-700` écrit en dur dans un composant bouton."),
-      c("tessa-2", "Une couche sémantique à 40 rôles : `feedback.warning.subtle.bg.hover`."),
-      c("tessa-3", "Le dark mode fait en dupliquant toute la palette (vs ré-aliasing)."),
-      c("tessa-4", "Un « design system » = un Storybook isolé que seuls les devs front ouvrent."),
-      c("tessa-5", "Des tokens nommés par valeur (`blue`, `big`) plutôt que par intention (`action.primary`)."),
-      c("tessa-6", "Figma érigé en source de vérité, la prod suit Figma."),
+      c("tessa-1", "Radix — headless, non-stylé, accessibilité d'abord : il te donne le comportement, à toi la peau.", "Liberté sacrée, ou refus de trancher qui refile le boulot dur au consommateur ?", "https://www.radix-ui.com"),
+      c("tessa-2", "shadcn/ui — pas une dépendance : tu copies-colles le code chez toi et tu le possèdes.", "Génie anti-lock-in, ou fin du « système » (chacun sa copie qui diverge) ?", "https://ui.shadcn.com"),
+      c("tessa-3", "Material 3 (Google) — l'opinion de Google imposée partout : tokens, motion, formes.", "Cohérence mondiale rassurante, ou tout se ressemble et ta marque meurt ?", "https://m3.material.io"),
+      c("tessa-4", "Carbon (IBM) — enterprise, ultra-complet, lourd, très normé.", "Rigueur qui scale à 1000 devs, ou cathédrale qui écrase une équipe de 5 ?", "https://carbondesignsystem.com"),
+      c("tessa-5", "Ant Design — dense, tout est fourni (tables, transferts, tout).", "Productivité brute, ou esthétique « admin panel » dont on ne sort jamais ?", "https://ant.design"),
+      c("tessa-6", "Polaris (Shopify) — autant de guidelines de CONTENU / voix que de composants.", "Le DS comme contrat de marque, ou sur-cadrage qui infantilise le designer ?", "https://polaris.shopify.com"),
     ],
   },
   john: {
@@ -145,14 +146,14 @@ const DECKS_EN: Record<string, Deck> = {
   },
   tessa: {
     intro:
-      "STRUCTURE decisions taken in real design systems. Keep / toss / remix by what makes a true system vs a pile of components.",
+      "REAL, well-known design systems. For each: keep (you steal from it) / toss / remix — and why. Open the docs if you don't know it.",
     cards: [
-      c("tessa-1", "`green-700` hard-coded inside a button component."),
-      c("tessa-2", "A 40-role semantic layer: `feedback.warning.subtle.bg.hover`."),
-      c("tessa-3", "Dark mode built by duplicating the whole palette (vs re-aliasing)."),
-      c("tessa-4", "A “design system” = an isolated Storybook only front-end devs ever open."),
-      c("tessa-5", "Tokens named by value (`blue`, `big`) rather than by intent (`action.primary`)."),
-      c("tessa-6", "Figma crowned as source of truth, production follows Figma."),
+      c("tessa-1", "Radix — headless, unstyled, accessibility-first: it gives you the behaviour, the skin is yours.", "Sacred freedom, or a refusal to decide that dumps the hard work on the consumer?", "https://www.radix-ui.com"),
+      c("tessa-2", "shadcn/ui — not a dependency: you copy-paste the code into your repo and own it.", "Anti-lock-in genius, or the end of the “system” (everyone's copy drifts)?", "https://ui.shadcn.com"),
+      c("tessa-3", "Material 3 (Google) — Google's opinion imposed everywhere: tokens, motion, shapes.", "Reassuring global consistency, or everything looks the same and your brand dies?", "https://m3.material.io"),
+      c("tessa-4", "Carbon (IBM) — enterprise, exhaustive, heavy, highly regulated.", "Rigour that scales to 1000 devs, or a cathedral that crushes a team of 5?", "https://carbondesignsystem.com"),
+      c("tessa-5", "Ant Design — dense, everything provided (tables, transfers, the lot).", "Raw productivity, or an “admin panel” aesthetic you never escape?", "https://ant.design"),
+      c("tessa-6", "Polaris (Shopify) — as many CONTENT / voice guidelines as components.", "The DS as a brand contract, or over-framing that infantilises the designer?", "https://polaris.shopify.com"),
     ],
   },
   john: {

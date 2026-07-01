@@ -450,11 +450,11 @@ export default function Page() {
                   <div key={a.id} className="space-row">
                     <div className="space-info">
                       <div className="space-name">
-                        {a.name} <span className={`st ${b.cls}`}>{b.dot} {T[b.key]}</span>
+                        {agentTitle(a, lang)} <span className={`st ${b.cls}`}>{b.dot} {T[b.key]}</span>
                       </div>
                       <div className="space-title">
-                      {agentTitle(a, lang)} · <span className={hasVisualPool(a.id) ? "tier tier-visual" : "tier tier-text"}>{hasVisualPool(a.id) ? T.tierVisual : T.tierText}</span>
-                    </div>
+                        <span className={hasVisualPool(a.id) ? "tier tier-visual" : "tier tier-text"}>{hasVisualPool(a.id) ? T.tierVisual : T.tierText}</span>
+                      </div>
                     </div>
                     <div className="space-actions">
                       <button onClick={() => openProfile(a.id)}>{action}</button>
@@ -545,6 +545,12 @@ export default function Page() {
                 <div className="card">
                   {card?.src && <img className="card-img" src={card.src} alt="" />}
                   <div className="card-stim">{card?.label}</div>
+                  {card?.hint && <div className="card-hint">{card.hint}</div>}
+                  {card?.link && (
+                    <div className="card-credit">
+                      <a href={card.link} target="_blank" rel="noopener noreferrer">{T.seeDoc} ↗</a>
+                    </div>
+                  )}
                 </div>
                 <textarea className="reason" value={cardReason} onChange={(e) => setCardReason(e.target.value)} placeholder={T.reasonPlaceholder} />
                 <div className="geste-row">
@@ -679,14 +685,14 @@ function Toggles({ lang, theme, langLocked, lockMsg, onLang, onTheme }: { lang: 
   );
 }
 
-function PhaseHead({ name, title, step, right, onBack, backTitle }: { name?: string; title?: string; step: string; right?: string; onBack?: () => void; backTitle?: string }) {
+function PhaseHead({ title, step, right, onBack, backTitle }: { name?: string; title?: string; step: string; right?: string; onBack?: () => void; backTitle?: string }) {
   return (
     <div className="head">
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
         {onBack && <button className="iconbtn" title={backTitle} onClick={onBack}>←</button>}
         <div>
-          <div className="who">{name}</div>
-          <div className="meta">{title} · {step}</div>
+          <div className="who">{title}</div>
+          <div className="meta">{step}</div>
         </div>
       </div>
       {right ? <div className="meta">{right}</div> : null}
