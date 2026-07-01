@@ -11,7 +11,9 @@ import { getStore } from "@/lib/store";
 import { readJson, accessDenied, clientIp, resolvePerson } from "@/lib/auth";
 
 export const runtime = "nodejs";
-export const maxDuration = 60;
+// La voix distille TOUS les entretiens d'un coup (3 métiers = un gros corpus) via un
+// modèle possiblement à thinking : 60 s ne suffisent pas (504 constaté). Plafond Fluid Hobby.
+export const maxDuration = 300;
 
 export async function POST(req: Request) {
   const body = await readJson(req);

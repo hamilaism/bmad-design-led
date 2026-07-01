@@ -370,7 +370,7 @@ export default function Page() {
         body: JSON.stringify({ accessCode, name, pin, lang, regen }),
       });
       const data = await res.json().catch(() => ({} as any));
-      if (!res.ok) throw new Error(data?.error || T.errGeneric);
+      if (!res.ok) throw new Error(data?.error || `${T.errGeneric} (${res.status})`);
       setVoiceFiche(data.fiche);
       setVoiceVersion(data.version || 0);
       setView("voice");

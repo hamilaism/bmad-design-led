@@ -8,7 +8,9 @@ import { getStore } from "@/lib/store";
 import { readJson, accessDenied, clientIp, resolvePerson } from "@/lib/auth";
 
 export const runtime = "nodejs";
-export const maxDuration = 60;
+// Marge : l'enrichissement re-distille un transcript accumulé (passes successives) —
+// même risque de dépassement que la voix, en plus petit.
+export const maxDuration = 120;
 
 function renderTranscript(messages: any[]): string {
   return messages
