@@ -5,7 +5,7 @@ import { complete } from "@/lib/llm";
 import { AGENTS, fichePrompt } from "@/lib/agents";
 import type { Verdict, Injection } from "@/lib/artefacts";
 import { getStore } from "@/lib/store";
-import { hashPin, validPinFormat } from "@/lib/pin";
+import { readJson, accessDenied, clientIp, resolvePerson } from "@/lib/auth";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -25,9 +25,20 @@ function renderTranscript(messages: any[]): string {
 
 function renderClassification(verdicts: any[]): string {
   if (!verdicts.length) return "";
+  // Un même artefact re-jugé sur une autre passe n'est PAS un doublon à nettoyer :
+  // c'est le contrôle anti-bruit de la méthode. On le marque pour que le distillateur
+  // lise la divergence éventuelle comme un signal, pas comme une erreur de saisie.
+  const seen = new Map<string, number>();
   return (
     "CLASSIFICATION — verdicts sur des artefacts proposés :\n" +
-    verdicts.map((v) => `- [${(v.geste || "").toUpperCase()}] ${v.label}\n  → ${v.reason?.trim() || "(sans raison)"}`).join("\n")
+    verdicts
+      .map((v) => {
+        const n = (seen.get(v.id) || 0) + 1;
+        seen.set(v.id, n);
+        const again = n > 1 ? ` (${n}ᵉ passage sur le MÊME artefact — compare les gestes : divergence = bruit ou évolution, c'est une donnée)` : "";
+        return `- [${(v.geste || "").toUpperCase()}] ${v.label}${again}\n  → ${v.reason?.trim() || "(sans raison)"}`;
+      })
+      .join("\n")
   );
 }
 
@@ -40,31 +51,23 @@ function renderInjection(items: any[]): string {
 }
 
 export async function POST(req: Request) {
-  let body: any;
-  try {
-    body = await req.json();
-  } catch {
-    return Response.json({ error: "JSON invalide." }, { status: 400 });
-  }
-  const { agentId, accessCode, name, pin, messages, classification, injection, lang } = body || {};
+  const body = await readJson(req);
+  if (!body) return Response.json({ error: "JSON invalide." }, { status: 400 });
+  const { agentId, name, messages, classification, injection, lang } = body;
   const l = lang === "en" ? "en" : "fr";
 
-  if (process.env.ACCESS_CODE && accessCode !== process.env.ACCESS_CODE) {
-    return Response.json({ error: "Code d'accès invalide." }, { status: 401 });
-  }
+  if (accessDenied(body)) return Response.json({ error: "Code d'accès invalide." }, { status: 401 });
   const agent = AGENTS[agentId];
   if (!agent) return Response.json({ error: "Agent inconnu." }, { status: 400 });
 
-  const person = typeof name === "string" ? name.trim() : "";
   const store = getStore();
+  let person = typeof name === "string" ? name.trim() : "";
 
-  // Identité / verrou.
+  // Identité / verrou (uniquement si on persiste).
   if (store) {
-    if (!person) return Response.json({ error: "Prénom requis." }, { status: 400 });
-    if (!validPinFormat(pin)) return Response.json({ error: "Code à 4 chiffres requis." }, { status: 400 });
-    const hash = await store.getPersonPinHash(person);
-    if (hash === null) await store.createPerson(person, hashPin(pin));
-    else if (hash !== hashPin(pin)) return Response.json({ error: "Code de profil invalide." }, { status: 403 });
+    const auth = await resolvePerson(store, name, body.pin, clientIp(req), { create: true });
+    if (!auth.ok) return Response.json({ error: auth.error }, { status: auth.status });
+    person = auth.person;
   }
 
   // Inputs de CETTE passe.

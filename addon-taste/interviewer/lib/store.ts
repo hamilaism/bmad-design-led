@@ -19,7 +19,7 @@ export type ProfileState = {
 export type FicheExport = { person: string; agent: string; fiche: string | null; ficheVersion: number; updatedAt: string };
 
 export interface Store {
-  getPersonPinHash(name: string): Promise<string | null>; // null si la personne n'existe pas
+  getPersonPinHash(name: string): Promise<string | null>; // null si la personne n'existe pas ; THROW sur erreur de lecture (≠ absence)
   createPerson(name: string, pinHash: string): Promise<void>;
   listProfiles(name: string): Promise<ProfileSummary[]>;
   getProfile(name: string, agent: string): Promise<ProfileState | null>;
@@ -58,10 +58,9 @@ function supabaseStore(): Store {
   return {
     async getPersonPinHash(name) {
       const { data, error } = await sb.from("persons").select("pin_hash").eq("name", name).maybeSingle();
-      if (error) {
-        console.error("[store/supabase] lecture personne:", error.message);
-        return null;
-      }
+      // Une erreur de lecture N'EST PAS « personne inconnue » : la confondre avec null
+      // ferait sauter le check PIN en aval. On throw, l'appelant répond 503.
+      if (error) throw new Error("lecture personne : " + error.message);
       return data?.pin_hash ?? null;
     },
     async createPerson(name, pinHash) {

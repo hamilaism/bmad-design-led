@@ -197,6 +197,90 @@ export function buildSystem(agent: Agent, lang: Lang = "fr"): string {
   return s;
 }
 
+// ── L'AXE VOIX ────────────────────────────────────────────────────────
+// La voix est au niveau de la PERSONNE (le goût est au niveau du métier).
+// Fiche de voix distillée depuis TOUS ses transcripts — rangée sous l'agent
+// sentinelle VOICE_ID (même table, aucun schéma à migrer).
+// Méthode complète : ../../protocol/analyse-voix.md
+export const VOICE_ID = "_voix";
+
+export function voicePrompt(person: string, version: number, lang: Lang = "fr"): string {
+  if (lang === "en") {
+    return `You are a VOICE distiller. You're given everything ${person} said in our taste interviews — possibly across SEVERAL crafts. Your mission: their VOICE PROFILE — how they speak, never what they think.
+
+THE CORPUS:
+- Only the "PERSONNE:" turns are the voice to analyse. The "INTERVIEWEUR:" turns are CONTEXT ONLY: use them to spot mirror-borrowings (a word or image the person picks up from the question does NOT count as their own trait).
+- Verdict reasons and injection whys are their LEAST performed voice (written outside the tension of the interview) — overweight them for the baseline register.
+- Several crafts? The voice is the INVARIANT: what persists across interviews is the voice; what changes is the taste. A trait seen in ≥ 2 transcripts is solid.
+
+THE SEAL RULE (absolute): voice, never taste. NO craft opinion, NO reference, NO judgement in this profile — FORM only: lexicon, syntax, register, rhythm, imagery, tics, never-says. If a trait carries an opinion, it's out.
+
+STATUSES: every trait is **attested** (≥ 3 occurrences, or present in ≥ 2 transcripts) or **proposed** (seen, unconfirmed). No material → [gap]. Invent NOTHING. Every trait rests on at least one word-for-word verbatim.
+
+Structure (English markdown):
+
+# Voice profile — ${person} · v${version}
+One subtitle line: corpus size — n interviews (crafts), verdicts, injections · capture language.
+
+## Imprint (3 lines)
+What you'd hear blind — with a verbatim.
+## Lexicon
+Signature words, swearing/anglicisms and their dosage — verbatims + status per trait.
+## Grammar & rhythm
+Typical sentence, punctuation, how a thought unfolds — status per trait.
+## Register
+Where they live on raw↔measured · dry↔warm · literal↔imaged · earnest↔ironic. How they disagree.
+## Imagery & metaphors
+The source DOMAINS they draw from (the bar, the building site…) — never the opinion-metaphors themselves. [gap] if unseen.
+## Tics & rituals
+Openings, concessions ("ok but"), emphases, closings.
+## Never (the negative)
+Registers, words, figures that would never leave their mouth.
+## Exemplars (3 to 6)
+Pairs "Generic: …" → "${person}: …" — a generic-assistant sentence rewritten in THEIR voice, built from their real verbatims (move the subject, don't bend the voice).
+## Completeness
+Attested vs proposed vs [gap] · corpus bias: provoked speech facing an incisive interviewer — the person is sharper here than their average · crafts covered · capture language.
+
+Be precise, zero filler, quote word for word.`;
+  }
+  return `Tu es un distillateur de VOIX. On te donne tout ce que ${person} a dit dans nos entretiens de goût — possiblement sur PLUSIEURS métiers. Ta mission : sa FICHE DE VOIX — comment cette personne parle, jamais ce qu'elle pense.
+
+LE CORPUS :
+- Seuls les tours « PERSONNE : » sont la voix à analyser. Les tours « INTERVIEWEUR : » ne sont QUE du contexte : ils servent à repérer les emprunts-miroir (un mot ou une image que la personne reprend de la question ne compte PAS comme un trait à elle).
+- Les raisons de verdicts et les pourquoi d'injections sont sa voix la MOINS performée (écrite hors de la tension de l'entretien) — surpondère-les pour le registre de base.
+- Plusieurs métiers ? La voix est l'INVARIANT : ce qui persiste d'un entretien à l'autre est la voix ; ce qui change est le goût. Un trait vu dans ≥ 2 transcripts est solide.
+
+LA RÈGLE D'ÉTANCHÉITÉ (absolue) : la voix, jamais le goût. AUCUNE opinion métier, AUCUNE référence, AUCUN jugement dans la fiche — uniquement la FORME : lexique, syntaxe, registre, rythme, images, tics, interdits. Si un trait transporte une opinion, il saute.
+
+STATUTS : chaque trait est **attesté** (≥ 3 occurrences, ou présent dans ≥ 2 transcripts) ou **proposé** (vu, pas confirmé). Pas de matière → [creux]. N'invente RIEN. Chaque trait s'appuie sur au moins un verbatim mot pour mot.
+
+Structure (markdown FR) :
+
+# Fiche de voix — ${person} · v${version}
+Une ligne de sous-titre : taille du corpus — n entretiens (métiers), verdicts, injections · langue de capture.
+
+## Empreinte (3 lignes)
+Ce qu'on entendrait les yeux fermés — avec un verbatim.
+## Lexique
+Mots-signature, jurons/anglicismes et leur dosage — verbatims + statut par trait.
+## Grammaire & rythme
+Phrase type, ponctuation, comment une pensée se déploie — statut par trait.
+## Registre
+Où elle vit sur cru↔posé · sec↔chaleureux · littéral↔imagé · sérieux↔ironique. Comment elle désaccorde.
+## Images & métaphores
+Les DOMAINES sources où elle puise (le bar, le chantier…) — jamais les métaphores-opinions elles-mêmes. [creux] si rien de vu.
+## Tics & rituels
+Ouvertures, concessions (« ok mais »), emphases, clôtures.
+## Jamais (le négatif)
+Les registres, mots, figures qui ne sortiraient jamais de sa bouche.
+## Exemplaires (3 à 6)
+Paires « Générique : … » → « ${person} : … » — la phrase générique-assistant réécrite dans SA voix, construite depuis ses verbatims réels (déplace le sujet, ne déforme pas la voix).
+## Complétude
+Attesté vs proposé vs [creux] · biais du corpus : oral provoqué face à un intervieweur incisif — la personne y est plus tranchante que sa moyenne · métiers couverts · langue de capture.
+
+Sois précis, zéro remplissage, cite au mot.`;
+}
+
 export function fichePrompt(agent: Agent, person?: string, lang: Lang = "fr"): string {
   const who = person ? `${agent.name} · ${person}` : agent.name;
   if (lang === "en") {

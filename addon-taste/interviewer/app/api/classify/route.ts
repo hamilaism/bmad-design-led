@@ -7,7 +7,9 @@ import { AGENTS, agentTitle } from "@/lib/agents";
 import { poolFor, artefactImageUrl } from "@/lib/pools";
 
 export const runtime = "nodejs";
-export const maxDuration = 30;
+// 60 s : le job classify passe par le même plancher de tokens que les autres (cf.
+// lib/llm.ts TOKEN_FLOOR) — un modèle à thinking peut prendre > 30 s avant le JSON.
+export const maxDuration = 60;
 
 export async function POST(req: Request) {
   let body: any;

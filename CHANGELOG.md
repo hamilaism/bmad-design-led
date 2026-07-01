@@ -2,6 +2,23 @@
 
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/). Versionné en SemVer.
 
+## [Non publié]
+
+### Corrigé (durcissement post-audit de l'app d'entretien)
+- **Rate-limit des PIN** (5 échecs / 15 min par prénom+IP) — la serrure à 10 000 combinaisons n'est plus brute-forçable en quelques minutes par un invité sur l'espace d'un autre.
+- **Auth factorisée** (`lib/auth.ts`, une implémentation au lieu de 3 variantes divergentes) : une erreur de lecture DB ne fait plus **sauter le check PIN** sur `profile-delete` (503, pas bypass) ; la course à la création de personne (contrainte unique) est encaissée ; prénom borné à 40 caractères.
+- **Les erreurs LLM ne polluent plus les transcripts** : erreur de création → vrai statut HTTP (502) ; erreur en cours de stream → sentinelle hors-bande que le client affiche comme erreur au lieu de la laisser entrer dans le transcript (où elle finissait **distillée dans la fiche**).
+- **Relire sa fiche sans la régénérer** : route `/api/profile` (lecture seule, PIN requis) + bouton « Voir la fiche » sur les profils faits — fini le « ✓ Enregistrée » invérifiable et les régénérations payantes pour consulter.
+- **Payload borné** : les images des tours anciens deviennent un marqueur texte côté client (l'historique base64 ne regonfle plus jusqu'à la limite Vercel de 4,5 Mo) ; historique plafonné à 60 tours côté serveur ; les images ne partent plus dans le payload de génération de fiche (le distillateur ne les lit pas).
+- **Verdicts re-jugés annotés** au lieu de dupliqués en silence (« 2ᵉ passage sur le même artefact ») — la divergence redevient le signal anti-bruit voulu par la méthode, pas un parasite.
+- **`LLM_TOKEN_FLOOR`** : le plancher `max_tokens` du chemin openai (16 000 par défaut, exigé par les modèles à thinking via gateway) devient réglable par l'opérateur ; `classify` passe à `maxDuration` 60 s.
+- Nettoyage : `LANGS`, `defaultInjectionPrompt`, prop `name` de `PhaseHead` (code mort).
+
+### Ajouté
+- **L'axe VOIX — capture en ligne** (`addon-taste/protocol/analyse-voix.md` = la conception ; l'app = la capture) :
+  - **Fiche de voix par PERSONNE** (pas par métier) : `/api/voice` distille comment la personne parle — lexique, grammaire & rythme, registre, domaines d'images, tics, « jamais », exemplaires — depuis **tous** ses entretiens + raisons de verdicts + pourquoi d'injections (la voix la moins performée, surpondérée). Toujours régénérée depuis le corpus complet (la voix est l'**invariant** inter-transcripts). Rangée sous l'agent sentinelle `_voix` (même table `profiles`, **aucune migration**) → embarquée d'office dans l'export opérateur. Carte « 🎙️ Ta voix » dans l'espace (distiller / voir / redistiller), règle d'étanchéité voix≠goût et statuts attesté/proposé/[creux] dans le prompt (`voicePrompt`, `lib/agents.ts`).
+  - **Verbosité maximale, outillée** : hint permanent sous le composer d'entretien (« déroule, parle au micro ») + **dictée au micro** (Web Speech API, FR/EN suivant la langue du parcours, bouton 🎙️ pulsant) — le carburant des deux axes.
+
 ## [0.2.0] — 2026-06-30
 
 ### Ajouté

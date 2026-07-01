@@ -2,7 +2,6 @@
 // reçoivent la langue, cf. lib/agents.ts). Tout ce que la PERSONNE lit est ici.
 
 export type Lang = "fr" | "en";
-export const LANGS: Lang[] = ["fr", "en"];
 
 // Langue par défaut côté client (navigateur), repli FR.
 export function detectLang(): Lang {
@@ -34,6 +33,7 @@ type Dict = {
   actStart: string;
   actContinue: string;
   actEnrich: string;
+  actView: string;
   stEmpty: string;
   stPartial: string;
   stDone: string;
@@ -83,7 +83,6 @@ type Dict = {
   errNetwork: string;
   errImage: string;
   // Divers
-  defaultInjectionPrompt: string;
   langLocked: string;
   // Classification visuelle adaptative
   gardeHint: string;
@@ -100,6 +99,18 @@ type Dict = {
   tierVisual: string;
   tierText: string;
   seeDoc: string;
+  // Axe VOIX + verbosité/micro
+  voiceTitle: string;
+  voiceDesc: string;
+  voiceGen: string;
+  voiceRegen: string;
+  voiceView: string;
+  voiceNeedMaterial: string;
+  voiceHeading: (person: string, version: number) => string;
+  verbosityHint: string;
+  micDictateTitle: string;
+  micStopTitle: string;
+  micListening: string;
 };
 
 const FR: Dict = {
@@ -125,6 +136,7 @@ const FR: Dict = {
   actStart: "Démarrer",
   actContinue: "Continuer",
   actEnrich: "Enrichir",
+  actView: "Voir la fiche",
   stEmpty: "à faire",
   stPartial: "en cours",
   stDone: "fiche faite",
@@ -170,7 +182,6 @@ const FR: Dict = {
   backTitle: "Retour à mon espace",
   errNetwork: "Erreur réseau.",
   errImage: "Image illisible.",
-  defaultInjectionPrompt: "Les exemples que tu admires — et ceux que tu rejettes.",
   langLocked: "Langue verrouillée pendant le parcours — reviens à ton espace pour la changer.",
   gardeHint: "je vole l'idée telle quelle",
   jetteHint: "ça dégage, et je sais pourquoi",
@@ -186,6 +197,19 @@ const FR: Dict = {
   tierVisual: "🖼️ écrans réels",
   tierText: "📝 classification texte",
   seeDoc: "voir la doc",
+  voiceTitle: "Ta voix",
+  voiceDesc:
+    "Comment tu parles — lexique, rythme, images, tics — distillé depuis tous tes entretiens. Une seule fiche pour tous tes profils : c'est toi, pas le métier.",
+  voiceGen: "Distiller ma voix",
+  voiceRegen: "Redistiller (tout le corpus)",
+  voiceView: "Voir",
+  voiceNeedMaterial: "Fais d'abord au moins un entretien — ta voix se lit dans tes mots.",
+  voiceHeading: (person, version) => `Fiche de voix — ${person}${version ? ` · v${version}` : ""}`,
+  verbosityHint:
+    "🎙️ Déroule — et parle au micro si tu peux (le bouton micro, ou la dictée de ton clavier) : plus tu es verbeux·se, plus ton twin te ressemble. Digressions bienvenues.",
+  micDictateTitle: "Dicter au micro",
+  micStopTitle: "Arrêter la dictée",
+  micListening: "🎙️ J'écoute — parle, ça s'écrit.",
 };
 
 const EN: Dict = {
@@ -211,6 +235,7 @@ const EN: Dict = {
   actStart: "Start",
   actContinue: "Continue",
   actEnrich: "Enrich",
+  actView: "View profile",
   stEmpty: "to do",
   stPartial: "in progress",
   stDone: "done",
@@ -256,7 +281,6 @@ const EN: Dict = {
   backTitle: "Back to my space",
   errNetwork: "Network error.",
   errImage: "Unreadable image.",
-  defaultInjectionPrompt: "The examples you admire — and the ones you reject.",
   langLocked: "Language locked during the flow — go back to your space to change it.",
   gardeHint: "I'd steal the idea as-is",
   jetteHint: "it's out, and I know why",
@@ -272,6 +296,19 @@ const EN: Dict = {
   tierVisual: "🖼️ real screens",
   tierText: "📝 text classification",
   seeDoc: "see the docs",
+  voiceTitle: "Your voice",
+  voiceDesc:
+    "How you speak — lexicon, rhythm, imagery, tics — distilled from all your interviews. One profile for all your twins: it's you, not the craft.",
+  voiceGen: "Distil my voice",
+  voiceRegen: "Re-distil (full corpus)",
+  voiceView: "View",
+  voiceNeedMaterial: "Do at least one interview first — your voice lives in your words.",
+  voiceHeading: (person, version) => `Voice profile — ${person}${version ? ` · v${version}` : ""}`,
+  verbosityHint:
+    "🎙️ Unspool — and speak into the mic if you can (the mic button, or your keyboard's dictation): the more verbose you are, the more your twin sounds like you. Digressions welcome.",
+  micDictateTitle: "Dictate with the mic",
+  micStopTitle: "Stop dictation",
+  micListening: "🎙️ Listening — speak, it types.",
 };
 
 export const UI: Record<Lang, Dict> = { fr: FR, en: EN };

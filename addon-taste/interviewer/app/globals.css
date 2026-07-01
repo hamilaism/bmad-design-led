@@ -210,3 +210,8 @@ button.full { width: 100%; padding: 13px; font-weight: 600; }
 /* Verrouillée pendant un parcours : la langue active reste lisible, l'autre grisée */
 .langseg.locked button:disabled { opacity: 0.45; cursor: not-allowed; }
 .langseg.locked button.on:disabled { opacity: 1; cursor: not-allowed; }
+
+/* --- Axe VOIX : dictée au micro + hint verbosité --- */
+.mic-on { color: #e5484d; border-color: #e5484d !important; animation: micpulse 1.2s ease-in-out infinite; }
+@keyframes micpulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.45; } }
+.hint-verbose { color: var(--muted); font-size: 12.5px; line-height: 1.45; margin: 8px 2px 0; }

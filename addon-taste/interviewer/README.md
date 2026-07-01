@@ -71,6 +71,7 @@ L'app est une app Next.js standard, build **autoportant** (`output: standalone`)
 | `POSTGRES_URL` / `POSTGRES_SSL` | si store postgres |
 | `ACCESS_CODE` | code partagé aux invités (sinon URL ouverte) |
 | `PIN_SALT` | sel pour hasher les PIN de profil (mets une valeur aléatoire) |
+| `LLM_TOKEN_FLOOR` | plancher `max_tokens` sur le chemin openai (déf. `16000` — les modèles à thinking via gateway exigent une marge au-dessus du budget de raisonnement ; baisse-le si ta gateway n'en a pas besoin) |
 
 Voir `.env.example` pour le détail commenté.
 
@@ -78,6 +79,6 @@ Voir `.env.example` pour le détail commenté.
 
 ## Notes
 
-- **Sécurité** : clé du modèle + clés de stockage vivent **côté serveur uniquement**, jamais exposées au client. `ACCESS_CODE` évite qu'un random crame ta clé. Le **PIN de profil** (4 chiffres, hashé) identifie + protège une personnalité — c'est une serrure douce, pas de la crypto.
+- **Sécurité** : clé du modèle + clés de stockage vivent **côté serveur uniquement**, jamais exposées au client. `ACCESS_CODE` évite qu'un random crame ta clé. Le **PIN de profil** (4 chiffres, hashé) identifie + protège une personnalité — c'est une serrure douce, pas de la crypto ; les essais de PIN sont **rate-limités** (5 échecs / 15 min par prénom+IP, compteur par instance) et une erreur de lecture DB ne fait **jamais** sauter le verrou (503, pas bypass).
 - **Lean & jetable** : pas de design system, pas de tests, pas d'auth lourde. C'est un outil d'élicitation.
 - **`npm audit`** : il reste des advisories Next de niveau framework qui ne touchent pas la surface de cette app (pas d'image optimizer, middleware, i18n, rewrites). Le seul « fix » serait un saut de version majeure — non justifié ici.

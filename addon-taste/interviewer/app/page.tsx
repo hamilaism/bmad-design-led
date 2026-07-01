@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { AGENTS, agentTitle } from "@/lib/agents";
+import { AGENTS, VOICE_ID, agentTitle } from "@/lib/agents";
 import { deckFor, injectionPromptFor, type Geste, type Verdict, type Injection } from "@/lib/artefacts";
 import { hasVisualPool } from "@/lib/pools";
 import { fileToImage } from "@/lib/image";
+import { STREAM_ERR } from "@/lib/stream";
 import { tr, detectLang, type Lang } from "@/lib/i18n";
 
 type ImgPart = { type: "image"; source: { type: "base64"; media_type: string; data: string } };
@@ -12,7 +13,7 @@ type TextPart = { type: "text"; text: string };
 type Content = string | Array<TextPart | ImgPart>;
 type Msg = { role: "user" | "assistant"; content: Content };
 type Attachment = { media_type: string; data: string; url: string };
-type View = "setup" | "space" | "interview" | "classification" | "injection" | "fiche";
+type View = "setup" | "space" | "interview" | "classification" | "injection" | "fiche" | "voice";
 type Draft = { label: string; stance: "fétiche" | "bête-noire"; why: string; image?: { media_type: string; data: string; url: string } };
 type Status = "empty" | "partial" | "done";
 type ProfileSummary = { agent: string; status: Status; ficheVersion: number };
@@ -75,6 +76,16 @@ export default function Page() {
   const [ficheVersion, setFicheVersion] = useState(0);
   const [stored, setStored] = useState(false);
 
+  // Axe VOIX (niveau personne — une fiche pour tous les profils)
+  const [voiceFiche, setVoiceFiche] = useState<string | null>(null);
+  const [voiceVersion, setVoiceVersion] = useState(0);
+  const [voiceBusy, setVoiceBusy] = useState(false);
+
+  // Dictée au micro (Web Speech API) — la verbosité est le carburant des deux axes.
+  const [micSupported, setMicSupported] = useState(false);
+  const [micOn, setMicOn] = useState(false);
+  const recRef = useRef<any>(null);
+
   const streamRef = useRef<HTMLDivElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const injFileRef = useRef<HTMLInputElement>(null);
@@ -94,6 +105,11 @@ export default function Page() {
   }, []);
   useEffect(() => {
     fetch("/api/config").then((r) => r.json()).then(setCfg).catch(() => setCfg({ operatorName: "", collected: false }));
+  }, []);
+  // Détection micro après montage (évite un mismatch d'hydratation SSR).
+  useEffect(() => {
+    setMicSupported(!!((window as any).SpeechRecognition || (window as any).webkitSpeechRecognition));
+    return () => recRef.current?.stop?.();
   }, []);
   useEffect(() => {
     streamRef.current?.scrollTo({ top: streamRef.current.scrollHeight, behavior: "smooth" });
@@ -183,6 +199,29 @@ export default function Page() {
       startInterview(id);
     }
   }
+  // Relire une fiche stockée sans la régénérer (ni re-payer une génération).
+  async function viewProfileFiche(id: string) {
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/profile", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, accessCode, pin, agentId: id }),
+      });
+      const data = await res.json().catch(() => ({} as any));
+      if (!res.ok) throw new Error(data?.error || T.errGeneric);
+      setAgentId(id);
+      setFiche(data.fiche);
+      setFicheVersion(data.version || 0);
+      setStored(true);
+      setView("fiche");
+    } catch (e: any) {
+      setError(e?.message || T.errGeneric);
+    } finally {
+      setBusy(false);
+    }
+  }
   async function delProfile(id: string) {
     if (!confirm(T.delConfirm(AGENTS[id]?.name || id))) return;
     try {
@@ -195,11 +234,35 @@ export default function Page() {
     } catch {}
   }
   function backToSpace() {
+    recRef.current?.stop();
     setView("space");
     refreshSpace();
   }
 
   // ---------- ENTRETIEN ----------
+  // Allège le payload : les images des tours anciens (déjà vues par l'intervieweur)
+  // deviennent un marqueur texte — sinon l'historique base64 regonfle à chaque tour
+  // et finit par dépasser la limite de body (4,5 Mo sur Vercel).
+  function slimHistory(msgs: Msg[], keepImagesInLastUserTurns: number): Msg[] {
+    let userSeen = 0;
+    const out: Msg[] = [];
+    for (let i = msgs.length - 1; i >= 0; i--) {
+      const m = msgs[i];
+      if (m.role === "user" && Array.isArray(m.content)) {
+        userSeen++;
+        if (userSeen > keepImagesInLastUserTurns) {
+          out.unshift({
+            role: m.role,
+            content: m.content.map((p) => (p.type === "image" ? ({ type: "text", text: "[image jointe]" } as TextPart) : p)),
+          });
+          continue;
+        }
+      }
+      out.unshift(m);
+    }
+    return out;
+  }
+
   async function callChat(next: Msg[], id = agentId) {
     setBusy(true);
     setError(null);
@@ -208,21 +271,29 @@ export default function Page() {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ agentId: id, accessCode, messages: next, lang }),
+        body: JSON.stringify({ agentId: id, accessCode, messages: slimHistory(next, 2), lang }),
       });
       if (!res.ok || !res.body) throw new Error((await res.text()) || T.errNetwork);
       const reader = res.body.getReader();
       const dec = new TextDecoder();
       let acc = "";
+      const visible = () => (acc.includes(STREAM_ERR) ? acc.slice(0, acc.indexOf(STREAM_ERR)) : acc);
       for (;;) {
         const { done, value } = await reader.read();
         if (done) break;
         acc += dec.decode(value, { stream: true });
         setMessages((m) => {
           const c = m.slice();
-          c[c.length - 1] = { role: "assistant", content: acc };
+          c[c.length - 1] = { role: "assistant", content: visible() };
           return c;
         });
+      }
+      // Erreur en cours de stream : la sentinelle ne doit JAMAIS entrer dans le
+      // transcript (elle finirait distillée dans la fiche) — on l'affiche comme erreur.
+      if (acc.includes(STREAM_ERR)) {
+        const clean = visible().trim();
+        setError(acc.slice(acc.indexOf(STREAM_ERR) + STREAM_ERR.length).trim() || T.errNetwork);
+        setMessages(clean ? [...next, { role: "assistant", content: clean }] : next);
       }
     } catch (e: any) {
       setError(e?.message || T.errGeneric);
@@ -258,6 +329,65 @@ export default function Page() {
       setError(e?.message || T.errImage);
     }
     if (fileRef.current) fileRef.current.value = "";
+  }
+
+  // ---------- DICTÉE AU MICRO ----------
+  function toggleMic() {
+    if (micOn) {
+      recRef.current?.stop();
+      return; // onend remet micOn à false
+    }
+    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SR) return;
+    const rec = new SR();
+    rec.lang = lang === "fr" ? "fr-FR" : "en-US";
+    rec.continuous = true;
+    rec.interimResults = false;
+    rec.onresult = (e: any) => {
+      let final = "";
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        if (e.results[i].isFinal) final += e.results[i][0].transcript;
+      }
+      if (final.trim()) setInput((v) => (v ? v.replace(/\s+$/, "") + " " : "") + final.trim());
+    };
+    rec.onend = () => setMicOn(false);
+    rec.onerror = () => setMicOn(false);
+    recRef.current = rec;
+    setMicOn(true);
+    rec.start();
+  }
+
+  // ---------- AXE VOIX ----------
+  const voiceSummary = profiles.find((p) => p.agent === VOICE_ID);
+  const hasVoiceMaterial = profiles.some((p) => p.agent !== VOICE_ID && p.status !== "empty");
+  async function fetchVoice(regen: boolean) {
+    setVoiceBusy(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/voice", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ accessCode, name, pin, lang, regen }),
+      });
+      const data = await res.json().catch(() => ({} as any));
+      if (!res.ok) throw new Error(data?.error || T.errGeneric);
+      setVoiceFiche(data.fiche);
+      setVoiceVersion(data.version || 0);
+      setView("voice");
+      refreshSpace();
+    } catch (e: any) {
+      setError(e?.message || T.errGeneric);
+    } finally {
+      setVoiceBusy(false);
+    }
+  }
+  function downloadVoice() {
+    if (!voiceFiche) return;
+    const blob = new Blob([voiceFiche], { type: "text/markdown;charset=utf-8" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `voix-${name || "anon"}.md`;
+    a.click();
   }
 
   // ---------- CLASSIFICATION ----------
@@ -357,7 +487,9 @@ export default function Page() {
       const res = await fetch("/api/fiche", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ agentId, accessCode, name, pin, messages, classification: verdicts, injection: allInjections, lang }),
+        // Le distillateur ne lit pas les images de l'entretien (le transcript les rend
+        // « [image jointe] ») — on ne paie pas leur base64 dans le payload.
+        body: JSON.stringify({ agentId, accessCode, name, pin, messages: slimHistory(messages, 0), classification: verdicts, injection: allInjections, lang }),
       });
       const data = await res.json().catch(() => ({} as any));
       if (!res.ok) throw new Error(data?.error || `${T.errGeneric} (${res.status}).`);
@@ -457,6 +589,11 @@ export default function Page() {
                       </div>
                     </div>
                     <div className="space-actions">
+                      {st === "done" && (
+                        <button className="ghost" onClick={() => viewProfileFiche(a.id)} disabled={busy}>
+                          {T.actView}
+                        </button>
+                      )}
                       <button onClick={() => openProfile(a.id)}>{action}</button>
                       {st !== "empty" && (
                         <button className="iconbtn" title={T.delTitle} onClick={() => delProfile(a.id)}>
@@ -467,9 +604,50 @@ export default function Page() {
                   </div>
                 );
               })}
+              <div className="space-row">
+                <div className="space-info">
+                  <div className="space-name">
+                    🎙️ {T.voiceTitle}
+                    {voiceSummary?.ficheVersion ? <span className="st st-done"> ✅ v{voiceSummary.ficheVersion}</span> : null}
+                  </div>
+                  <div className="space-title">{T.voiceDesc}</div>
+                </div>
+                <div className="space-actions">
+                  {voiceSummary?.ficheVersion ? (
+                    <>
+                      <button onClick={() => fetchVoice(false)} disabled={voiceBusy}>{T.voiceView}</button>
+                      <button className="ghost" onClick={() => fetchVoice(true)} disabled={voiceBusy}>
+                        {voiceBusy ? T.genBusy : T.voiceRegen}
+                      </button>
+                    </>
+                  ) : (
+                    <button onClick={() => fetchVoice(true)} disabled={voiceBusy || !hasVoiceMaterial} title={!hasVoiceMaterial ? T.voiceNeedMaterial : undefined}>
+                      {voiceBusy ? T.genBusy : T.voiceGen}
+                    </button>
+                  )}
+                </div>
+              </div>
+              {!hasVoiceMaterial && <p className="sub" style={{ margin: "4px 2px 0" }}>{T.voiceNeedMaterial}</p>}
             </div>
+            {error && <p className="err">{error}</p>}
           </div>
         </>
+      );
+    }
+
+    // VOIX
+    if (view === "voice") {
+      return (
+        <div className="fiche-wrap">
+          <h1 style={{ fontSize: 22 }}>{T.voiceHeading(name || "anon", voiceVersion)}</h1>
+          {cfg && <p className="consent">ℹ️ {notice()}</p>}
+          <div className="row">
+            <button onClick={() => navigator.clipboard.writeText(voiceFiche ?? "")}>{T.copy}</button>
+            <button className="ghost" onClick={downloadVoice}>{T.downloadMd}</button>
+            <button className="ghost" onClick={backToSpace}>{T.backSpace}</button>
+          </div>
+          <div className="fiche-md">{voiceFiche}</div>
+        </div>
       );
     }
 
@@ -496,7 +674,7 @@ export default function Page() {
       if (hasVisualPool(agentId)) {
         return (
           <>
-            <PhaseHead name={agent?.name} title={agentTitle(agent, lang)} step={`${T.stepClassif}${enrichMode ? T.enrichSuffix : ""}`} right={`${verdicts.length} ✓`} onBack={backToSpace} backTitle={T.backTitle} />
+            <PhaseHead title={agentTitle(agent, lang)} step={`${T.stepClassif}${enrichMode ? T.enrichSuffix : ""}`} right={`${verdicts.length} ✓`} onBack={backToSpace} backTitle={T.backTitle} />
             <div className="phase-body">
               {verdicts.length === 0 && <p className="sub">{enrichMode ? T.enrichIntro : ""}{T.visualIntro}</p>}
               {vInterp && <p className="interp">✦ {T.tasteSoFar} — {vInterp}</p>}
@@ -532,7 +710,7 @@ export default function Page() {
       const card = deck?.cards[cardIdx];
       return (
         <>
-          <PhaseHead name={agent?.name} title={agentTitle(agent, lang)} step={`${T.stepClassif}${enrichMode ? T.enrichSuffix : ""}`} right={deck ? `${cardIdx + 1} / ${deck.cards.length}` : ""} onBack={backToSpace} backTitle={T.backTitle} />
+          <PhaseHead title={agentTitle(agent, lang)} step={`${T.stepClassif}${enrichMode ? T.enrichSuffix : ""}`} right={deck ? `${cardIdx + 1} / ${deck.cards.length}` : ""} onBack={backToSpace} backTitle={T.backTitle} />
           <div className="phase-body">
             {!deck ? (
               <>
@@ -576,7 +754,7 @@ export default function Page() {
       const enough = enrichMode ? signals >= 1 : signals >= 3;
       return (
         <>
-          <PhaseHead name={agent?.name} title={agentTitle(agent, lang)} step={`${T.stepInjection}${enrichMode ? T.enrichSuffix : ""}`} right={T.added(injections.length)} onBack={backToSpace} backTitle={T.backTitle} />
+          <PhaseHead title={agentTitle(agent, lang)} step={`${T.stepInjection}${enrichMode ? T.enrichSuffix : ""}`} right={T.added(injections.length)} onBack={backToSpace} backTitle={T.backTitle} />
           <div className="phase-body">
             <p className="sub">{T.injectLead}{injectionPromptFor(agentId, lang)}</p>
             {injections.length > 0 && (
@@ -625,7 +803,7 @@ export default function Page() {
     // ENTRETIEN (défaut)
     return (
       <>
-        <PhaseHead name={agent?.name} title={agentTitle(agent, lang)} step={T.stepInterview} right={T.answers(exchanges)} onBack={backToSpace} backTitle={T.backTitle} />
+        <PhaseHead title={agentTitle(agent, lang)} step={T.stepInterview} right={T.answers(exchanges)} onBack={backToSpace} backTitle={T.backTitle} />
         <div className="stream" ref={streamRef}>
           {messages.map((m, i) => (
             <div key={i} className={`msg ${m.role}`}>
@@ -639,6 +817,11 @@ export default function Page() {
           <div className="input-row">
             <button className="iconbtn" onClick={() => fileRef.current?.click()} title={T.attachTitle} disabled={busy}>＋</button>
             <input ref={fileRef} type="file" accept="image/*" multiple hidden onChange={(e) => onFiles(e.target.files)} />
+            {micSupported && (
+              <button className={`iconbtn${micOn ? " mic-on" : ""}`} onClick={toggleMic} title={micOn ? T.micStopTitle : T.micDictateTitle}>
+                🎙️
+              </button>
+            )}
             <textarea
               value={input}
               onChange={(e) => setInput(e.target.value)}
@@ -653,6 +836,7 @@ export default function Page() {
             />
             <button onClick={sendMessage} disabled={busy || (!input.trim() && attachments.length === 0)}>↑</button>
           </div>
+          <p className="hint-verbose">{micOn ? T.micListening : T.verbosityHint}</p>
           {exchanges >= 3 && (
             <div className="actions">
               <button className="ghost" onClick={() => { setView("classification"); if (hasVisualPool(agentId)) fetchNextArtefact(agentId, verdicts, vShown); }} disabled={busy}>{T.toClassification}</button>
@@ -685,7 +869,7 @@ function Toggles({ lang, theme, langLocked, lockMsg, onLang, onTheme }: { lang: 
   );
 }
 
-function PhaseHead({ title, step, right, onBack, backTitle }: { name?: string; title?: string; step: string; right?: string; onBack?: () => void; backTitle?: string }) {
+function PhaseHead({ title, step, right, onBack, backTitle }: { title?: string; step: string; right?: string; onBack?: () => void; backTitle?: string }) {
   return (
     <div className="head">
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>

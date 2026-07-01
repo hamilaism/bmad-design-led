@@ -5,6 +5,7 @@
 // La posture éditoriale vit dans les PROMPTS (lib/agents.ts), pas ici → modèles interchangeables.
 
 import { anthropic, MODEL } from "@/lib/anthropic";
+import { STREAM_ERR } from "@/lib/stream";
 
 const PROVIDER = (process.env.LLM_PROVIDER || "anthropic").toLowerCase();
 const OPENAI_BASE_URL = (process.env.OPENAI_BASE_URL || "").replace(/\/+$/, "");
@@ -25,9 +26,11 @@ function resolve(job?: Job): { provider: string; model: string } {
 }
 
 // Marge haute pour les modèles à raisonnement/thinking via gateway (ex. Claude via Thiga
-// exige max_tokens > budget de thinking). Plafond inoffensif pour les autres.
+// exige max_tokens > budget de thinking). C'est un PLAFOND, pas une consommation — mais
+// il autorise un modèle bavard à dérouler : ajustable par l'opérateur (LLM_TOKEN_FLOOR).
+const TOKEN_FLOOR = Number(process.env.LLM_TOKEN_FLOOR || 16000);
 function floorTokens(mt: number): number {
-  return Math.max(mt, 16000);
+  return Math.max(mt, TOKEN_FLOOR);
 }
 
 export type Part =
@@ -53,7 +56,11 @@ function toOpenAIMessages(system: string, messages: Msg[]): any[] {
 }
 
 // Streaming → flux d'octets texte (pour /api/chat).
-export function streamChat({
+// ASYNC : les erreurs de CRÉATION (auth, 4xx/5xx du provider, réseau) THROW avant le
+// premier octet → la route peut répondre un vrai statut HTTP. Les erreurs EN COURS de
+// stream (trop tard pour le statut) sont marquées par la sentinelle STREAM_ERR, que le
+// client retire du transcript et affiche comme erreur.
+export async function streamChat({
   system,
   messages,
   maxTokens = 1200,
@@ -63,29 +70,28 @@ export function streamChat({
   messages: Msg[];
   maxTokens?: number;
   job?: Job;
-}): ReadableStream<Uint8Array> {
+}): Promise<ReadableStream<Uint8Array>> {
   const enc = new TextEncoder();
   const { provider, model } = resolve(job);
 
   if (provider === "openai") {
+    const res = await fetch(`${OPENAI_BASE_URL}/chat/completions`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${OPENAI_API_KEY}`, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model,
+        messages: toOpenAIMessages(system, messages),
+        stream: true,
+        max_tokens: floorTokens(maxTokens),
+      }),
+    });
+    if (!res.ok || !res.body) {
+      throw new Error("Gateway " + res.status + " : " + (await res.text()).slice(0, 200));
+    }
+    const reader = res.body.getReader();
     return new ReadableStream({
       async start(controller) {
         try {
-          const res = await fetch(`${OPENAI_BASE_URL}/chat/completions`, {
-            method: "POST",
-            headers: { Authorization: `Bearer ${OPENAI_API_KEY}`, "Content-Type": "application/json" },
-            body: JSON.stringify({
-              model,
-              messages: toOpenAIMessages(system, messages),
-              stream: true,
-              max_tokens: floorTokens(maxTokens),
-            }),
-          });
-          if (!res.ok || !res.body) {
-            controller.enqueue(enc.encode("\n\n[erreur serveur : " + res.status + " " + (await res.text()).slice(0, 160) + "]"));
-            return;
-          }
-          const reader = res.body.getReader();
           const dec = new TextDecoder();
           let buf = "";
           for (;;) {
@@ -109,7 +115,7 @@ export function streamChat({
             }
           }
         } catch (e: any) {
-          controller.enqueue(enc.encode("\n\n[erreur serveur : " + (e?.message || "inconnue") + "]"));
+          controller.enqueue(enc.encode(STREAM_ERR + (e?.message || "inconnue")));
         } finally {
           controller.close();
         }
@@ -117,24 +123,24 @@ export function streamChat({
     });
   }
 
-  // Anthropic
+  // Anthropic — messages.create THROW sur 4xx/5xx, avant le premier octet.
+  const ant = await anthropic.messages.create({
+    model,
+    max_tokens: maxTokens,
+    system,
+    messages: messages as any,
+    stream: true,
+  });
   return new ReadableStream({
     async start(controller) {
       try {
-        const ant = await anthropic.messages.create({
-          model,
-          max_tokens: maxTokens,
-          system,
-          messages: messages as any,
-          stream: true,
-        });
         for await (const event of ant) {
           if (event.type === "content_block_delta" && event.delta.type === "text_delta") {
             controller.enqueue(enc.encode(event.delta.text));
           }
         }
       } catch (e: any) {
-        controller.enqueue(enc.encode("\n\n[erreur serveur : " + (e?.message || "inconnue") + "]"));
+        controller.enqueue(enc.encode(STREAM_ERR + (e?.message || "inconnue")));
       } finally {
         controller.close();
       }
