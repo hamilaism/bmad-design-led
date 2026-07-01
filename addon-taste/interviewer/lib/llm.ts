@@ -1,7 +1,8 @@
-// Couche modèle AGNOSTIQUE du provider.
-// - LLM_PROVIDER=anthropic (défaut) → API Anthropic Messages (Opus 4.8 par défaut).
-// - LLM_PROVIDER=openai            → n'importe quelle gateway compatible-OpenAI (ex. Thiga).
-// Les routes ne parlent qu'à ce module. Basculer = changer des variables d'env, pas du code.
+// Couche modèle AGNOSTIQUE du provider, avec ROUTING PAR JOB.
+// Chaque job (interview | fiche | classify) peut viser son propre provider+modèle :
+//   MODEL_INTERVIEW=openai:gpt-5.5   MODEL_FICHE=openai:claude-sonnet-4.6   MODEL_CLASSIFY=openai:gpt-5.5
+// Repli : LLM_PROVIDER (anthropic|openai) + ANTHROPIC_MODEL / OPENAI_MODEL.
+// La posture éditoriale vit dans les PROMPTS (lib/agents.ts), pas ici → modèles interchangeables.
 
 import { anthropic, MODEL } from "@/lib/anthropic";
 
@@ -10,13 +11,30 @@ const OPENAI_BASE_URL = (process.env.OPENAI_BASE_URL || "").replace(/\/+$/, "");
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY || "";
 const OPENAI_MODEL = process.env.OPENAI_MODEL || "";
 
-// Format des messages côté app = forme Anthropic (texte + image base64).
+export type Job = "interview" | "fiche" | "classify";
+
+// Résout provider+modèle pour un job (env MODEL_<JOB>="provider:model"), sinon repli global.
+function resolve(job?: Job): { provider: string; model: string } {
+  const raw = job ? (process.env["MODEL_" + job.toUpperCase()] || "").trim() : "";
+  if (raw.includes(":")) {
+    const i = raw.indexOf(":");
+    return { provider: raw.slice(0, i).toLowerCase(), model: raw.slice(i + 1).trim() };
+  }
+  if (raw) return { provider: PROVIDER, model: raw };
+  return { provider: PROVIDER, model: PROVIDER === "openai" ? OPENAI_MODEL : MODEL };
+}
+
+// Marge haute pour les modèles à raisonnement/thinking via gateway (ex. Claude via Thiga
+// exige max_tokens > budget de thinking). Plafond inoffensif pour les autres.
+function floorTokens(mt: number): number {
+  return Math.max(mt, 16000);
+}
+
 export type Part =
   | { type: "text"; text: string }
   | { type: "image"; source: { type: "base64"; media_type: string; data: string } };
 export type Msg = { role: "user" | "assistant"; content: string | Part[] };
 
-// Conversion vers le format chat OpenAI (system = message, image = image_url data-URL).
 function toOpenAIMessages(system: string, messages: Msg[]): any[] {
   const out: any[] = [{ role: "system", content: system }];
   for (const m of messages) {
@@ -39,14 +57,17 @@ export function streamChat({
   system,
   messages,
   maxTokens = 1200,
+  job,
 }: {
   system: string;
   messages: Msg[];
   maxTokens?: number;
+  job?: Job;
 }): ReadableStream<Uint8Array> {
   const enc = new TextEncoder();
+  const { provider, model } = resolve(job);
 
-  if (PROVIDER === "openai") {
+  if (provider === "openai") {
     return new ReadableStream({
       async start(controller) {
         try {
@@ -54,10 +75,10 @@ export function streamChat({
             method: "POST",
             headers: { Authorization: `Bearer ${OPENAI_API_KEY}`, "Content-Type": "application/json" },
             body: JSON.stringify({
-              model: OPENAI_MODEL,
+              model,
               messages: toOpenAIMessages(system, messages),
               stream: true,
-              max_tokens: maxTokens,
+              max_tokens: floorTokens(maxTokens),
             }),
           });
           if (!res.ok || !res.body) {
@@ -101,7 +122,7 @@ export function streamChat({
     async start(controller) {
       try {
         const ant = await anthropic.messages.create({
-          model: MODEL,
+          model,
           max_tokens: maxTokens,
           system,
           messages: messages as any,
@@ -121,21 +142,25 @@ export function streamChat({
   });
 }
 
-// Non-streaming → texte complet (pour /api/fiche ; supporte les images dans messages).
+// Non-streaming → texte complet (pour /api/fiche, /api/classify ; supporte les images).
 export async function complete({
   system,
   messages,
   maxTokens,
+  job,
 }: {
   system: string;
   messages: Msg[];
   maxTokens: number;
+  job?: Job;
 }): Promise<string> {
-  if (PROVIDER === "openai") {
+  const { provider, model } = resolve(job);
+
+  if (provider === "openai") {
     const res = await fetch(`${OPENAI_BASE_URL}/chat/completions`, {
       method: "POST",
       headers: { Authorization: `Bearer ${OPENAI_API_KEY}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ model: OPENAI_MODEL, messages: toOpenAIMessages(system, messages), max_tokens: maxTokens }),
+      body: JSON.stringify({ model, messages: toOpenAIMessages(system, messages), max_tokens: floorTokens(maxTokens) }),
     });
     if (!res.ok) throw new Error("Gateway " + res.status + " : " + (await res.text()).slice(0, 200));
     const j = await res.json();
@@ -143,13 +168,10 @@ export async function complete({
   }
 
   const res = await anthropic.messages.create({
-    model: MODEL,
+    model,
     max_tokens: maxTokens,
     system,
     messages: messages as any,
   });
   return res.content.map((c: any) => (c.type === "text" ? c.text : "")).join("");
 }
-
-export const ACTIVE_MODEL =
-  PROVIDER === "openai" ? `${OPENAI_MODEL} @ ${OPENAI_BASE_URL}` : MODEL;

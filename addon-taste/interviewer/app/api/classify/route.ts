@@ -53,7 +53,7 @@ export async function POST(req: Request) {
   let pick = remaining[0].id;
   let interpretation = "";
   try {
-    const raw = await complete({ system, messages: [{ role: "user", content: user }], maxTokens: 300 });
+    const raw = await complete({ system, messages: [{ role: "user", content: user }], maxTokens: 300, job: "classify" });
     const m = raw.match(/\{[\s\S]*\}/);
     if (m) {
       const j = JSON.parse(m[0]);

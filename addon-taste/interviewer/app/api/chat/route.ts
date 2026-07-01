@@ -22,7 +22,7 @@ export async function POST(req: Request) {
 
   const l = lang === "en" ? "en" : "fr";
   // streamChat parle au provider actif (Anthropic ou gateway compatible-OpenAI).
-  const stream = streamChat({ system: buildSystem(agent, l), messages, maxTokens: 1200 });
+  const stream = streamChat({ system: buildSystem(agent, l), messages, maxTokens: 1200, job: "interview" });
 
   return new Response(stream, {
     headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store" },

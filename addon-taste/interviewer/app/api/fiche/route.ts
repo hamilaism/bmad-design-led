@@ -120,6 +120,7 @@ export async function POST(req: Request) {
       system: fichePrompt(agent, person || undefined, l),
       messages: [{ role: "user", content }],
       maxTokens: 4000,
+      job: "fiche",
     });
   } catch (e: any) {
     return Response.json({ error: "Génération échouée : " + (e?.message || "") }, { status: 500 });
