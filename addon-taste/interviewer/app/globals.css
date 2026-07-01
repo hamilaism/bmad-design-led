@@ -188,6 +188,9 @@ button.full { width: 100%; padding: 13px; font-weight: 600; }
 .space-info { min-width: 0; }
 .space-name { font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .space-title { color: var(--muted); font-size: 12px; margin-top: 2px; }
+.tier { font-size: 11px; font-weight: 500; }
+.tier-visual { color: var(--accent); }
+.tier-text { color: var(--muted); opacity: 0.85; }
 .space-actions { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
 .space-actions button:not(.iconbtn) { font-size: 13px; padding: 8px 14px; }
 .st { font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }

@@ -18,7 +18,7 @@ type Status = "empty" | "partial" | "done";
 type ProfileSummary = { agent: string; status: Status; ficheVersion: number };
 type Theme = "dark" | "light";
 
-const agentList = ["sally", "tessa", "john", "camille", "margaux", "nora", "winston", "dara"].map((id) => AGENTS[id]).filter(Boolean);
+const agentList = ["sally", "john", "camille", "margaux", "nora", "tessa", "winston", "kai", "sam", "nadia", "dara"].map((id) => AGENTS[id]).filter(Boolean);
 const GESTE_KEYS: Geste[] = ["garde", "jette", "recombine"];
 const STATUS_META: Record<Status, { dot: string; cls: string; key: "stEmpty" | "stPartial" | "stDone" }> = {
   empty: { dot: "○", cls: "st-empty", key: "stEmpty" },
@@ -452,7 +452,9 @@ export default function Page() {
                       <div className="space-name">
                         {a.name} <span className={`st ${b.cls}`}>{b.dot} {T[b.key]}</span>
                       </div>
-                      <div className="space-title">{agentTitle(a, lang)}</div>
+                      <div className="space-title">
+                      {agentTitle(a, lang)} · <span className={hasVisualPool(a.id) ? "tier tier-visual" : "tier tier-text"}>{hasVisualPool(a.id) ? T.tierVisual : T.tierText}</span>
+                    </div>
                     </div>
                     <div className="space-actions">
                       <button onClick={() => openProfile(a.id)}>{action}</button>

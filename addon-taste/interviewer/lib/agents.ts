@@ -117,13 +117,13 @@ export const AGENTS: Record<string, Agent> = {
   winston: {
     id: "winston",
     name: "Winston",
-    title: "Architecte système",
-    titleEn: "System Architect",
+    title: "Architecte logiciel",
+    titleEn: "Software Architect",
     modality: "verbal",
-    amorces: `- "Sur l'archi, il y a toujours une bonne réponse, c'est de la science." Faux : mono vs poly-repo, REST vs GraphQL, pyramide vs trophée de tests — c'est du goût, pas du canon. Sur quoi tu meurs, et qu'est-ce que tu trouves être une guerre de religion débile ?
-- "Boring technology" (Dan McKinley) vs le truc neuf et excitant : t'es du côté ennuyeux-qui-marche, ou tu te laisses tenter ? Quand ?
-- Le "ça dépend" du senior : c'est de la sagesse, ou une lâcheté pour ne jamais s'engager ? Force-le à PENCHER.
-- L'abstraction prématurée (DRY religieux) vs le copier-coller assumé : tu te trompes plutôt de quel côté ?`,
+    amorces: `- "Sur l'archi il y a toujours une bonne réponse, c'est de la science." Faux : c'est du goût. Sur quoi tu MEURS, et qu'est-ce que tu trouves être une guerre de religion débile où les deux camps sont des cons ?
+- Le "ça dépend" du senior : sagesse, ou lâcheté pour ne jamais s'engager ? Là, sur un cas concret, force-toi à PENCHER — et dis le prix que tu paies pour ce choix.
+- Buy vs build : la dernière fois que tu as CONSTRUIT un truc que tu aurais pu acheter — fierté mal placée, ou vraie conviction ? Et l'inverse, un "on achète" que tu regrettes ?
+- Où tu traces la frontière d'un service, d'un module — et qu'est-ce qui trahit une archi pensée par EGO (resume-driven development) plutôt que par contrainte réelle ?`,
   },
   dara: {
     id: "dara",
@@ -146,6 +146,39 @@ export const AGENTS: Record<string, Agent> = {
 - La punchline : une tagline, c'est une stratégie en quatre mots — ou le jeu de mots trop malin qui gagne des prix et ne vend rien. La frontière entre tranchant et gimmick, elle est où ? Fais-la te donner une accroche qu'elle trouve parfaite et une qu'elle trouve obscène.
 - Héritage journaliste : « kill your darlings », le lede qui dit tout en une ligne, show-don't-tell, le fait qui ancre vs l'adjectif qui gonfle. C'est quel tic d'écriture qui te fait grincer des dents à chaque fois ?
 - Langue claire / inclusive vs la voix : « écrire simple » tue-t-il la personnalité, ou « simple » c'est juste… bien écrire ? Et l'IA : c'est quoi le mot ou la tournure (« delve », « seamless », l'em-dash partout) qui te crie « une machine — ou un paresseux — a écrit ça » ?`,
+  },
+  kai: {
+    id: "kai",
+    name: "Kai",
+    title: "Développeur·se Frontend",
+    titleEn: "Frontend Engineer",
+    modality: "verbal",
+    amorces: `- React par défaut, c'est un choix ou un réflexe de mouton ? Tu prends Svelte / Solid / du vanilla QUAND — et c'est quoi la hype d'aujourd'hui qui va te coûter cher dans 2 ans ?
+- La guerre CSS : Tailwind (tout inline) vs CSS-in-JS vs le CSS qui respecte la cascade. Guerre de religion débile, ou il y a un vrai gagnant ? Sur quoi tu meurs ?
+- SSR, RSC, hydration : génie, ou usine à gaz qui résout des problèmes qu'on s'est créés tout seuls ? Le web était-il mieux en jQuery — sois honnête.
+- Un écran magnifique mais à 4 s de chargement et infoutu au clavier : tu le shippes ? L'a11y et la perf, ça bride ton goût, ou c'est PILE là qu'il se voit ?`,
+  },
+  sam: {
+    id: "sam",
+    name: "Sam",
+    title: "Développeur·se Backend",
+    titleEn: "Backend Engineer",
+    modality: "verbal",
+    amorces: `- Microservices par défaut = maturité, ou cargo-cult d'une archi de boîte à 10 000 devs plaquée sur ton app à 3 users ? Tu casses le monolithe QUAND, vraiment ?
+- Postgres pour tout vs la bonne base pour chaque job : pragmatisme, ou flemme d'apprendre ? Le JSONB partout pour éviter les migrations, tu craches dessus ou tu l'assumes ?
+- "Choose boring technology" vs le truc neuf excitant : t'es ennuyeux-qui-marche, ou tu te laisses tenter ? C'est quoi le dernier hype que tu as regretté amèrement ?
+- DRY religieux vs le copier-coller assumé : tu te trompes plutôt de quel côté ? L'abstraction prématurée, péché mortel ou détail qu'on corrige plus tard ?`,
+  },
+  nadia: {
+    id: "nadia",
+    name: "Nadia",
+    title: "DevOps / Platform Engineer",
+    titleEn: "DevOps / Platform Engineer",
+    modality: "verbal",
+    amorces: `- Kubernetes par défaut = sérieux, ou marteau-pilon pour écraser une mouche ? Serverless / PaaS QUAND ? Le YAML à rallonge, tu l'assumes ou tu le subis en pleurant ?
+- Tout en Terraform / GitOps vs « je clique une fois dans la console et j'oublie » : rigueur, ou cérémonie qui ralentit tout le monde ? Où est ta ligne exacte ?
+- Trois dashboards Grafana par service vs « les logs suffisent » : à partir de quand l'observabilité devient du théâtre de contrôle qui rassure les managers ?
+- Un pipeline CI à 40 minutes « pour la qualité » : investissement, ou punition collective que plus personne n'ose toucher ? Tu optimises, ou tu subis ?`,
   },
 };
 

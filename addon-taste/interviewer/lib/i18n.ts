@@ -97,6 +97,8 @@ type Dict = {
   sigReactions: (n: number) => string;
   sigRefs: (n: number) => string;
   sigInterview: (n: number) => string;
+  tierVisual: string;
+  tierText: string;
 };
 
 const FR: Dict = {
@@ -180,6 +182,8 @@ const FR: Dict = {
   sigReactions: (n) => `${n} réaction${n > 1 ? "s" : ""} aux artefacts`,
   sigRefs: (n) => `${n} apport${n > 1 ? "s" : ""}`,
   sigInterview: (n) => `${n} échange${n > 1 ? "s" : ""} d'entretien`,
+  tierVisual: "🖼️ écrans réels",
+  tierText: "📝 simplifié · beta",
 };
 
 const EN: Dict = {
@@ -263,6 +267,8 @@ const EN: Dict = {
   sigReactions: (n) => `${n} artefact reaction${n > 1 ? "s" : ""}`,
   sigRefs: (n) => `${n} addition${n > 1 ? "s" : ""}`,
   sigInterview: (n) => `${n} interview exchange${n > 1 ? "s" : ""}`,
+  tierVisual: "🖼️ real screens",
+  tierText: "📝 simplified · beta",
 };
 
 export const UI: Record<Lang, Dict> = { fr: FR, en: EN };

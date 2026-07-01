@@ -25,7 +25,7 @@ Le roster design-led garde les rôles produit de BMAD et ajoute les lentilles qu
 - **Product Marketing** — positionnement, récit, go-to-market (la distribution avant le vernis).
 
 **Les rôles produit & build** (les fondations BMAD, reframées dans le red-thread)
-- **Product Manager** · **Analyst** (recherche/discovery) · **Data Analyst** (hypothèses falsifiables, verdicts) · **Architect** · **Developer** · **QA / Release Reviewer** (revue adverse, plancher qualité, verdict ship/no-ship) · **Tech Writer** (handoff, gardien du red-thread).
+- **Product Manager** · **Analyst** (recherche/discovery) · **Data Analyst** (hypothèses falsifiables, verdicts) · **Architecte logiciel** (le juge des trade-offs, au-dessus des couches) · **Frontend** · **Backend** · **DevOps / Platform** · **QA / Release Reviewer** (revue adverse, plancher qualité, verdict ship/no-ship) · **Tech Writer** (handoff, gardien du red-thread).
 
 > Le détail des rôles n'est pas figé : adapte le roster à ton domaine. Le squelette d'un agent est dans `templates/`. L'invariant à tenir : **N agents = N dirs `.claude/skills/bmad-agent-*` + N entrées dans `config.toml`.**
 

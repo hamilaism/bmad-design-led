@@ -241,6 +241,9 @@ const INJECTION_FR: Record<string, string> = {
   winston: "Les archis / repos que tu trouves modèles — et tes bêtes noires de structure.",
   dara: "Les dashboards / métriques que tu respectes — et les vanity que tu méprises.",
   nora: "Les copies / voix / plumes que tu admires (une marque, un média, un produit qui écrit bien) — et celles qui te font fermer l'onglet.",
+  kai: "Les codebases / UI front que tu trouves exemplaires (perf, DX, a11y) — et celles qui te font fermer les devtools de dégoût.",
+  sam: "Les archis backend / API que tu trouves modèles — et les usines à gaz que tu as dû maintenir en pleurant.",
+  nadia: "Les setups infra / CI que tu trouves sains — et les usines à YAML dont tu as hérité.",
 };
 
 const INJECTION_EN: Record<string, string> = {
@@ -252,6 +255,9 @@ const INJECTION_EN: Record<string, string> = {
   winston: "The architectures / repos you find exemplary — and your structural pet peeves.",
   dara: "The dashboards / metrics you respect — and the vanity ones you despise.",
   nora: "The copy / voices / pens you admire (a brand, a publication, a product that writes well) — and the ones that make you close the tab.",
+  kai: "The frontend codebases / UIs you find exemplary (perf, DX, a11y) — and the ones that make you close the devtools in disgust.",
+  sam: "The backend architectures / APIs you find exemplary — and the over-engineered messes you've maintained in tears.",
+  nadia: "The infra / CI setups you find sane — and the YAML factories you've inherited.",
 };
 
 const INJECTION_PROMPTS: Record<Lang, Record<string, string>> = { fr: INJECTION_FR, en: INJECTION_EN };
