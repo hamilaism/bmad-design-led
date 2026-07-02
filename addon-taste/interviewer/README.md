@@ -1,47 +1,84 @@
 # Intervieweur de goût
 
-Un chat autonome qui mène l'**entretien de goût** (méthode : voir `../README.md`) pour capturer le goût d'un profil dans une **fiche de jumeau**, et te la renvoie.
+Un chat autonome qui mène l'**entretien de goût** d'un profil de métier et en produit une **fiche de jumeau** (méthode : `../protocol/README.md`). L'invité ouvre l'URL, entre son prénom + un code, et se fait interviewer — **aucun compte requis**, la clé du modèle vit côté serveur.
 
-**L'invité n'a besoin de rien** : il ouvre l'URL, choisit un profil, se fait interviewer, génère la fiche. L'app appelle l'API **Anthropic côté serveur, sur TA clé** — l'invité n'a pas de compte Claude.
+Capture en **3 temps** : **entretien** (déclaré) → **classification** (juger des artefacts) → **injection** (apporter les siens). Sortie : une fiche markdown, optionnellement stockée.
 
-## Comment ça marche
+> **On n'impose aucun service.** Trois axes — modèle, stockage, hébergement — chacun interchangeable par variables d'env. Notre stack par défaut est listée, mais tu branches ce que tu veux (y compris du **local**).
 
-1. L'invité ouvre l'URL → entre son prénom + un **code d'accès** → choisit le profil (les agents-exemples : UX, Design System, PM, Brand, Archi, Data en verbal ; **DA = réactions à des images**).
-2. Claude l'interviewe en live (moteur adaptatif : provocation, paradoxe, une question à la fois — jamais un QCM). Pour le profil visuel, l'invité **uploade des images** et réagit dessus.
-3. Bouton **« Terminer & générer la fiche »** → la fiche markdown est produite, **stockée dans Supabase** (table `fiches`) si configuré, et copiable/téléchargeable.
+---
 
-> Le jumeau porte le goût de **l'interviewé** → mets la bonne personne sur le bon profil (un pote calé DA → le profil DA, etc.). Les profils sont définis dans `lib/agents.ts` — adapte-les à tes rôles.
-
-## Setup (3 lignes)
+## Démarrage rapide (local, 3 lignes)
 
 ```bash
 npm install
-cp .env.example .env.local   # remplis les valeurs (voir ci-dessous)
-npm run dev                  # http://localhost:3000
+cp .env.example .env.local      # remplis au moins le modèle (voir ci-dessous)
+npm run dev                     # http://localhost:3000
 ```
 
-### Variables d'env (`.env.local`)
+Sans variable de stockage, l'app marche : la fiche est juste affichée + téléchargeable.
 
-| Variable | Quoi |
+---
+
+## 1. Modèle — `LLM_PROVIDER`
+
+| Provider | Variables | Pour qui |
+|---|---|---|
+| `anthropic` *(défaut)* | `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL` (déf. `claude-opus-4-8`) | API Anthropic directe |
+| `openai` | `OPENAI_BASE_URL`, `OPENAI_API_KEY`, `OPENAI_MODEL` | **Toute gateway compatible-OpenAI** : OpenAI, OpenRouter, une passerelle d'entreprise, **ou un modèle LOCAL** (Ollama / LM Studio — `OPENAI_BASE_URL=http://localhost:11434/v1`) |
+
+Le moteur d'entretien et les amorces par agent sont dans `lib/agents.ts` ; les artefacts (classification) dans `lib/artefacts.ts`. À adapter à tes rôles.
+
+## 2. Stockage — `STORE` (auto-détecté)
+
+Sert à **collecter les fiches** et à **appliquer le verrou PIN** des profils. Optionnel.
+
+| `STORE` | Variables | Pour qui |
+|---|---|---|
+| `supabase` | `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` | Supabase hébergé **ou auto-hébergé** (Docker local) |
+| `postgres` | `POSTGRES_URL` (+ `POSTGRES_SSL=true` si besoin) | **N'importe quel Postgres** : Neon, Railway, Render, un VPS, **ou local** (`postgres://user:pass@localhost:5432/db`) |
+| `none` *(défaut si rien)* | — | Pas de persistance ; fiche affichée/téléchargée, PIN non appliqué |
+
+**Schéma** (si `supabase` ou `postgres`) — joue une fois `supabase/schema.sql` :
+- Supabase → SQL Editor, colle le fichier.
+- Postgres → `psql "$POSTGRES_URL" -f supabase/schema.sql`.
+
+*(Le `schema.sql` est du Postgres standard. Les lignes `row level security` ne servent qu'au cas Supabase — inoffensives en Postgres direct, où le rôle de connexion les bypasse.)*
+
+## 3. Hébergement — n'importe quel hôte Node
+
+L'app est une app Next.js standard, build **autoportant** (`output: standalone`). Au choix :
+
+- **Local** : `npm run dev` (ou `npm run build && npm start`).
+- **Docker** : `docker build -t taste-interviewer . && docker run -p 3000:3000 --env-file .env.local taste-interviewer`.
+- **VPS / serveur Node** : `npm ci && npm run build && npm start` (sers derrière nginx/caddy).
+- **PaaS** : Render, Railway, Fly.io, Netlify… (build `next build`, start `next start`, ou l'image Docker).
+- **Vercel** : `vercel deploy --prod` + variables d'env. *(Une option parmi d'autres — rien n'y est spécifique.)*
+
+> Quel que soit l'hôte, mets les variables d'env (table ci-dessous), et **désactive toute « protection de déploiement »** du provider si tu veux que tes invités y accèdent — l'app est déjà protégée par `ACCESS_CODE`.
+
+---
+
+## Variables d'env (récap)
+
+| Variable | Rôle |
 |---|---|
-| `ANTHROPIC_API_KEY` | ta clé Anthropic (serveur uniquement, jamais exposée) |
-| `ANTHROPIC_MODEL` | optionnel — défaut `claude-sonnet-4-6` (mets opus pour plus tranchant) |
-| `ACCESS_CODE` | le code partagé aux invités (sinon l'URL est ouverte) |
-| `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` | optionnel — pour recevoir les fiches. Sans ça, l'app marche, la fiche est juste affichée |
+| `LLM_PROVIDER` | `anthropic` (déf.) ou `openai` |
+| `ANTHROPIC_API_KEY` / `ANTHROPIC_MODEL` | si provider anthropic |
+| `OPENAI_BASE_URL` / `OPENAI_API_KEY` / `OPENAI_MODEL` | si provider openai |
+| `STORE` | `supabase` / `postgres` / `none` (sinon auto) |
+| `SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY` | si store supabase |
+| `POSTGRES_URL` / `POSTGRES_SSL` | si store postgres |
+| `ACCESS_CODE` | code partagé aux invités (sinon URL ouverte) |
+| `PIN_SALT` | sel pour hasher les PIN de profil (mets une valeur aléatoire) |
+| `LLM_TOKEN_FLOOR` | plancher `max_tokens` sur le chemin openai (déf. `16000` — les modèles à thinking via gateway exigent une marge au-dessus du budget de raisonnement ; baisse-le si ta gateway n'en a pas besoin) |
 
-### Supabase (optionnel mais recommandé)
+Voir `.env.example` pour le détail commenté.
 
-Dans le SQL editor de ton projet Supabase, exécute `supabase/schema.sql` (crée la table `fiches`, RLS ON sans policy → seul le serveur écrit via service role).
-
-## Déploiement Vercel
-
-1. `vercel` (ou connecte le dossier à un projet Vercel).
-2. Dans Vercel → Settings → Environment Variables : colle les 4-5 variables ci-dessus.
-3. Deploy. Partage l'URL + le code d'accès.
+---
 
 ## Notes
 
-- **Sécurité** : la clé Anthropic et la service role Supabase ne quittent jamais le serveur. Le `ACCESS_CODE` évite qu'un random crame ta clé — change-le si tu le partages large.
-- **Lean & jetable** : pas de design system, pas de tests, pas d'auth. C'est un outil d'élicitation, pas un produit.
-- Le contenu des entretiens (moteur + amorces) est embarqué dans `lib/agents.ts` — adapte-le aux rôles de ton projet.
-- **`npm audit`** : sur Next `14.2.35` (dernier 14.x patché, la vuln critique est résolue), il reste des advisories Next de **niveau framework** (Image Optimizer, middleware, i18n, CSP nonces, RSC cache, SSRF WebSocket…). **Aucune ne touche la surface de cette app** (pas d'image optimizer, pas de middleware, pas d'i18n, pas de rewrites). Le seul « fix » = Next 16 (breaking, React 19) — non justifié ici.
+- **Sécurité** : clé du modèle + clés de stockage vivent **côté serveur uniquement**, jamais exposées au client. `ACCESS_CODE` évite qu'un random crame ta clé. Le **PIN de profil** (4 chiffres, hashé) identifie + protège une personnalité — c'est une serrure douce, pas de la crypto ; les essais de PIN sont **rate-limités** (5 échecs / 15 min par prénom+IP, compteur par instance) et une erreur de lecture DB ne fait **jamais** sauter le verrou (503, pas bypass).
+- **Lean & jetable** : pas de design system, pas de tests, pas d'auth lourde. C'est un outil d'élicitation.
+- **`npm audit`** : il reste des advisories Next de niveau framework qui ne touchent pas la surface de cette app (pas d'image optimizer, middleware, i18n, rewrites). Le seul « fix » serait un saut de version majeure — non justifié ici.

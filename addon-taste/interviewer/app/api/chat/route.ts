@@ -1,5 +1,5 @@
-import { anthropic, MODEL } from "@/lib/anthropic";
 import { AGENTS, buildSystem } from "@/lib/agents";
+import { streamChat } from "@/lib/llm";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -11,7 +11,7 @@ export async function POST(req: Request) {
   } catch {
     return new Response("JSON invalide.", { status: 400 });
   }
-  const { agentId, accessCode, messages } = body || {};
+  const { agentId, accessCode, messages, lang } = body || {};
 
   if (process.env.ACCESS_CODE && accessCode !== process.env.ACCESS_CODE) {
     return new Response("Code d'accès invalide.", { status: 401 });
@@ -20,31 +20,21 @@ export async function POST(req: Request) {
   if (!agent) return new Response("Agent inconnu.", { status: 400 });
   if (!Array.isArray(messages)) return new Response("Messages manquants.", { status: 400 });
 
-  const system = buildSystem(agent);
-  const encoder = new TextEncoder();
+  const l = lang === "en" ? "en" : "fr";
+  // Borne l'historique côté serveur (payload/tokens) — un entretien réel n'approche
+  // jamais 60 tours ; au-delà c'est un client anormal.
+  const msgs = messages.slice(-60);
 
-  const stream = new ReadableStream({
-    async start(controller) {
-      try {
-        const ant = await anthropic.messages.create({
-          model: MODEL,
-          max_tokens: 1200,
-          system,
-          messages,
-          stream: true,
-        });
-        for await (const event of ant) {
-          if (event.type === "content_block_delta" && event.delta.type === "text_delta") {
-            controller.enqueue(encoder.encode(event.delta.text));
-          }
-        }
-      } catch (e: any) {
-        controller.enqueue(encoder.encode("\n\n[erreur serveur : " + (e?.message || "inconnue") + "]"));
-      } finally {
-        controller.close();
-      }
-    },
-  });
+  // streamChat parle au provider actif (Anthropic ou gateway compatible-OpenAI).
+  // Erreur de création (provider injoignable, 4xx/5xx) → vrai statut HTTP, rien
+  // n'entre dans le transcript.
+  let stream: ReadableStream<Uint8Array>;
+  try {
+    stream = await streamChat({ system: buildSystem(agent, l), messages: msgs, maxTokens: 1200, job: "interview" });
+  } catch (e: any) {
+    console.error("[chat] provider injoignable:", e?.message);
+    return new Response("Le modèle est injoignable — réessaie dans un instant.", { status: 502 });
+  }
 
   return new Response(stream, {
     headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store" },

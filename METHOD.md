@@ -25,7 +25,7 @@ Le roster design-led garde les rôles produit de BMAD et ajoute les lentilles qu
 - **Product Marketing** — positionnement, récit, go-to-market (la distribution avant le vernis).
 
 **Les rôles produit & build** (les fondations BMAD, reframées dans le red-thread)
-- **Product Manager** · **Analyst** (recherche/discovery) · **Data Analyst** (hypothèses falsifiables, verdicts) · **Architect** · **Developer** · **QA / Release Reviewer** (revue adverse, plancher qualité, verdict ship/no-ship) · **Tech Writer** (handoff, gardien du red-thread).
+- **Product Manager** · **Analyst** (recherche/discovery) · **Data Analyst** (hypothèses falsifiables, verdicts) · **Architecte logiciel** (le juge des trade-offs, au-dessus des couches) · **Frontend** · **Backend** · **DevOps / Platform** · **QA / Release Reviewer** (revue adverse, plancher qualité, verdict ship/no-ship) · **Tech Writer** (handoff, gardien du red-thread).
 
 > Le détail des rôles n'est pas figé : adapte le roster à ton domaine. Le squelette d'un agent est dans `templates/`. L'invariant à tenir : **N agents = N dirs `.claude/skills/bmad-agent-*` + N entrées dans `config.toml`.**
 
@@ -34,6 +34,12 @@ Le roster design-led garde les rôles produit de BMAD et ajoute les lentilles qu
 Pas de RACI à 50 cases. Deux règles :
 - **Décideur unique.** Chaque arbitrage a un *lead* qui propose le volume + le rationnel ; une seule personne tranche le goût et signe. Les agents proposent, ne tranchent pas à sa place.
 - **Review-by-default.** Chaque agent relit le travail de ses voisins *selon sa propre lentille* (le Brand Strategist : « ce cadrage est-il traduisible en principes ? » ; le Design Foundation Lead : « cette spec d'états est-elle couverte par un token de rôle ? »). Il signale les écarts, il ne réécrit pas chez l'autre.
+
+**Deux tables, pas une.** Le design-led se joue sur deux scènes successives :
+- **Table MARQUE** (en amont) : **Brand Strategist** + **Art Director** + **UX Writer / CR** posent l'intention, l'identité et la voix.
+- **Table INTERFACE** (en aval) : **UX Designer** + **Product Manager** + **Art Director** + **UX Writer / CR** exécutent l'expérience.
+
+L'**Art Director** et l'**UX Writer / CR** siègent aux **deux** tables — ils portent l'identité et la voix jusque dans l'écran. Le **Brand Strategist**, lui, est **en amont** : son brief gouverne la voix du produit, mais il n'a **pas de siège à la crit interface** — sinon on re-litige la marque à chaque écran. Le **Design Foundation Lead** est le **pont** entre les deux tables : il traduit l'intention en tokens repris comme un contrat.
 
 ## Les trois couches (où vit quoi)
 

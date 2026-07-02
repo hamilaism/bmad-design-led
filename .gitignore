@@ -13,3 +13,9 @@ out/
 # OS / éditeur
 .DS_Store
 *.log
+
+# Couche Goût — on publie le FRAMEWORK, pas les RÉSULTATS.
+# Les fiches captées (twins) restent privées ; sauvegarde dans le projet d'origine (Shwifty).
+addon-taste/twins/
+# Sources de méthode couplées au projet d'origine — gardées en local, non publiées.
+addon-taste/protocol/*.source.md
